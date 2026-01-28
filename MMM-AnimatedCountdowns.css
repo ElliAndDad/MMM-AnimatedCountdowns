@@ -1,0 +1,1284 @@
+/* MMM-AnimatedCountdowns.css
+ */
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+.mmm-animated-countdowns {
+    --text-color: #ffd700;
+    --accent-color: #ffd700;
+    --counter-text-color: #ffffff;
+    --sand-color: #E2CA76;
+
+    position: relative;
+    text-align: center;
+    overflow: visible;
+    padding: 10px 0;
+    min-width: 350px;
+    container-type: inline-size;
+    container-name: countdown-module;
+}
+
+/* Stacked mode - show all events vertically */
+.mmm-animated-countdowns.stacked-mode {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Event wrapper - contains a single event */
+.event-wrapper {
+    position: relative;
+    border-radius: 10px;
+    padding: 10px 0;
+}
+
+/* ============================================
+   GRAYSCALE MODE (Inverted for MagicMirror)
+   ============================================ */
+
+.mmm-animated-countdowns.grayscale-mode {
+    filter: grayscale(1) invert(1);
+
+    /* Override colors with neutral grays that work well inverted */
+    --text-color: #333;
+    --accent-color: #333;
+    --counter-text-color: #111;
+    --sand-color: #666;
+}
+
+/* Particles - reduce opacity slightly for cleaner look */
+.mmm-animated-countdowns.grayscale-mode .particle {
+    filter: opacity(0.3);
+}
+
+/* Event icon - make it dark (will appear light after invert) */
+.mmm-animated-countdowns.grayscale-mode .event-icon {
+    filter: brightness(0.3);
+}
+
+/* Event name - dark color for good contrast after invert */
+.mmm-animated-countdowns.grayscale-mode .event-name {
+    color: #222;
+    text-shadow: none;
+}
+
+/* ---- DIGITAL COUNTER ---- */
+.mmm-animated-countdowns.grayscale-mode .time-unit {
+    background: rgba(200, 200, 200, 0.3);
+    border: 1px solid rgba(150, 150, 150, 0.3);
+}
+
+.mmm-animated-countdowns.grayscale-mode .time-value {
+    color: #111;
+    text-shadow: none;
+}
+
+.mmm-animated-countdowns.grayscale-mode .time-label {
+    color: #333;
+}
+
+/* ---- FLIP COUNTER ---- */
+.mmm-animated-countdowns.grayscale-mode .flip-digit-ul {
+    background: #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.mmm-animated-countdowns.grayscale-mode .flip-digit-li a div .inn {
+    color: #111;
+    text-shadow: none;
+    background-color: #ccc;
+}
+
+.mmm-animated-countdowns.grayscale-mode .flip-digit-li a div.up .inn {
+    background: linear-gradient(to bottom, #ddd 0%, #ccc 100%);
+}
+
+.mmm-animated-countdowns.grayscale-mode .flip-digit-li a div.down .inn {
+    background: linear-gradient(to bottom, #ccc 0%, #bbb 100%);
+}
+
+.mmm-animated-countdowns.grayscale-mode .flip-label {
+    color: #333;
+}
+
+/* ---- RINGS COUNTER ---- */
+.mmm-animated-countdowns.grayscale-mode .ring-bg {
+    stroke: rgba(100, 100, 100, 0.3);
+}
+
+.mmm-animated-countdowns.grayscale-mode .ring-progress {
+    stroke: #333;
+    filter: none;
+}
+
+.mmm-animated-countdowns.grayscale-mode .ring-value {
+    color: #111;
+    text-shadow: none;
+}
+
+.mmm-animated-countdowns.grayscale-mode .ring-label {
+    color: #333;
+}
+
+/* ---- HOURGLASS COUNTER ---- */
+.mmm-animated-countdowns.grayscale-mode .hourglass-glass-body {
+    fill: rgba(180, 180, 180, 0.4);
+    stroke: rgba(120, 120, 120, 0.6);
+}
+
+.mmm-animated-countdowns.grayscale-mode .hourglass-glass-inner {
+    fill: rgba(200, 200, 200, 0.3);
+}
+
+.mmm-animated-countdowns.grayscale-mode .hourglass-cap,
+.mmm-animated-countdowns.grayscale-mode .hourglass-cap-highlight,
+.mmm-animated-countdowns.grayscale-mode .hourglass-cap-shadow {
+    fill: #666;
+    stroke: #555;
+}
+
+.mmm-animated-countdowns.grayscale-mode .hourglass-sand {
+    fill: #333;
+    filter: none;
+}
+
+.mmm-animated-countdowns.grayscale-mode .hourglass-stream {
+    stroke: #333;
+    filter: none;
+}
+
+.mmm-animated-countdowns.grayscale-mode .hourglass-value {
+    color: #111;
+    text-shadow: none;
+}
+
+.mmm-animated-countdowns.grayscale-mode .hourglass-label {
+    color: #333;
+}
+
+/* ============================================
+   CONTENT CONTAINER
+   ============================================ */
+
+.content-container {
+    position: relative;
+    z-index: 10;
+    padding: 5px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Event icon */
+.event-icon {
+    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Android Emoji', 'EmojiSymbols', sans-serif;
+    font-size: 2.5em;
+    margin-bottom: 5px;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+/* Event name */
+.event-name {
+    font-size: 1.6em;
+    font-weight: 300;
+    color: var(--text-color);
+    text-shadow: 0 0 20px var(--text-color);
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    word-wrap: break-word;
+}
+
+/* No events message */
+.no-events {
+    font-size: 1.5em;
+    color: #888;
+    padding: 40px;
+}
+
+/* ============================================
+   COUNTDOWN DISPLAY - DIGITAL
+   ============================================ */
+
+.countdown-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.countdown-units.countdown-digital {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+.time-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 8px 6px;
+    min-width: 68px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.time-unit:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.time-value {
+    font-size: 1.6em;
+    font-weight: 700;
+    color: var(--counter-text-color);
+    line-height: 1;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.time-label {
+    font-size: 0.5em;
+    color: var(--counter-text-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 3px;
+}
+
+/* ============================================
+   COUNTDOWN DISPLAY - RINGS (Circular Progress)
+   ============================================ */
+
+.countdown-rings {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: nowrap;
+    margin-bottom: 15px;
+}
+
+.ring-container {
+    position: relative;
+    width: 68px;
+    height: 68px;
+}
+
+.ring-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.ring-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 6;
+}
+
+.ring-progress {
+    fill: none;
+    stroke: var(--accent-color);
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease;
+    filter: drop-shadow(0 0 6px var(--accent-color));
+}
+
+.ring-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ring-value {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--counter-text-color);
+    line-height: 1;
+}
+
+.ring-label {
+    font-size: 0.5em;
+    color: var(--counter-text-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
+/* ============================================
+   COUNTDOWN DISPLAY - HOURGLASS
+   ============================================ */
+
+.countdown-hourglass {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: nowrap;
+    margin-bottom: 15px;
+}
+
+.hourglass-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 68px;
+    perspective: 500px;
+}
+
+/* Flipper wrapper for rotation animation */
+.hourglass-flipper {
+    width: 100%;
+    transform-style: preserve-3d;
+}
+
+.hourglass-flipper.flip-animation {
+    animation: hourglassFlip 0.5s ease-in-out forwards;
+}
+
+@keyframes hourglassFlip {
+    0% {
+        transform: rotateX(0deg);
+    }
+
+    100% {
+        transform: rotateX(180deg);
+    }
+}
+
+.hourglass-svg {
+    width: 100%;
+    height: 55px;
+    display: block;
+}
+
+/* Hourglass glass body */
+.hourglass-glass-body {
+    fill: rgba(135, 206, 235, 0.25);
+    stroke: rgba(135, 206, 235, 0.6);
+    stroke-width: 2;
+}
+
+/* Hourglass glass inner (lighter fill) */
+.hourglass-glass-inner {
+    fill: rgba(135, 206, 235, 0.15);
+    stroke: none;
+}
+
+/* End caps (brownish wood color) */
+.hourglass-cap {
+    fill: #8B6914;
+    stroke: #6B4F0F;
+    stroke-width: 1;
+}
+
+.hourglass-cap-highlight {
+    fill: #A67C00;
+    stroke: none;
+    opacity: 0.6;
+}
+
+.hourglass-cap-shadow {
+    fill: #5C4A1F;
+    stroke: none;
+    opacity: 0.5;
+}
+
+/* Glass shine highlight */
+.hourglass-shine {
+    fill: rgba(255, 255, 255, 0.15);
+    stroke: none;
+}
+
+/* Sand fill */
+.hourglass-sand {
+    fill: var(--sand-color);
+    transition: y 0.3s ease, height 0.3s ease;
+    filter: drop-shadow(0 0 3px var(--sand-color));
+}
+
+.hourglass-sand-top {
+    opacity: 0.9;
+}
+
+.hourglass-sand-bottom {
+    opacity: 0.95;
+}
+
+/* Falling sand stream */
+.hourglass-stream {
+    stroke: var(--sand-color);
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0.7;
+    filter: drop-shadow(0 0 2px var(--sand-color));
+    transition: y2 0.1s ease;
+}
+
+/* Content below hourglass (number and label) */
+.hourglass-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.hourglass-value {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--counter-text-color);
+    line-height: 1;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.hourglass-label {
+    font-size: 0.5em;
+    color: var(--counter-text-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
+/* ============================================
+   COUNTDOWN DISPLAY - FLIP CLOCK
+   ============================================ */
+
+.countdown-flip {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+.flip-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flip-digits {
+    display: flex;
+    gap: 1px;
+}
+
+/* Main digit container (ul) */
+.flip-digit-ul {
+    position: relative;
+    float: left;
+    margin: 0;
+    width: 32px;
+    height: 54px;
+    font-size: 34px;
+    font-weight: bold;
+    line-height: 54px;
+    border-radius: 4px;
+    background: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+    list-style: none;
+    padding: 0;
+}
+
+/* List item (holds the digit) */
+.flip-digit-li {
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    text-decoration: none !important;
+}
+
+.flip-digit-li:first-child {
+    z-index: 2;
+}
+
+.flip-digit-li a {
+    display: block;
+    height: 100%;
+    perspective: 200px;
+    margin: 0 !important;
+    overflow: visible !important;
+    cursor: default !important;
+}
+
+/* Up and Down halves */
+.flip-digit-li a div.up,
+.flip-digit-li a div.down {
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    overflow: hidden;
+    outline: 1px solid transparent;
+}
+
+.flip-digit-li a div.up {
+    transform-origin: 50% 100%;
+    top: 0;
+    border-radius: 4px 4px 0 0;
+}
+
+.flip-digit-li a div.up:after {
+    content: "";
+    position: absolute;
+    top: 26px;
+    left: 0;
+    z-index: 5;
+    width: 100%;
+    height: 2px;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.flip-digit-li a div.down {
+    transform-origin: 50% 0%;
+    bottom: 0;
+    border-radius: 0 0 4px 4px;
+}
+
+/* Inner number display */
+.flip-digit-li a div .inn {
+    position: absolute;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    height: 200%;
+    color: var(--counter-text-color);
+    text-shadow: 0 1px 2px #000;
+    text-align: center;
+    background-color: #333;
+    border-radius: 4px;
+    font-family: 'Roboto Mono', 'SF Mono', 'Courier New', monospace;
+}
+
+.flip-digit-li a div.up .inn {
+    top: 0;
+    background: linear-gradient(to bottom, #444 0%, #333 100%);
+}
+
+.flip-digit-li a div.down .inn {
+    bottom: 0;
+    background: linear-gradient(to bottom, #333 0%, #2a2a2a 100%);
+}
+
+/* Shadow overlay for 3D effect */
+.flip-digit-li a div .shadow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+/* Animation states */
+.flip-digit-ul.play li.flip-clock-before {
+    z-index: 3;
+}
+
+.flip-digit-ul li.flip-clock-active {
+    z-index: 3;
+}
+
+.flip-digit-ul.play li.flip-clock-active {
+    animation: flipDigitZ 0.5s 0.5s linear both;
+    z-index: 5;
+}
+
+@keyframes flipDigitZ {
+    0% {
+        z-index: 2;
+    }
+
+    20% {
+        z-index: 4;
+    }
+
+    100% {
+        z-index: 4;
+    }
+}
+
+/* Top half flips down (before state) */
+.flip-digit-ul.play li.flip-clock-before .up {
+    z-index: 2;
+    animation: flipTop 0.5s linear both;
+}
+
+@keyframes flipTop {
+    0% {
+        transform: rotateX(0deg);
+    }
+
+    100% {
+        transform: rotateX(-90deg);
+    }
+}
+
+/* Bottom half flips down (active state) */
+.flip-digit-ul.play li.flip-clock-active .down {
+    z-index: 2;
+    animation: flipBottom 0.5s 0.5s linear both;
+}
+
+@keyframes flipBottom {
+    0% {
+        transform: rotateX(90deg);
+    }
+
+    100% {
+        transform: rotateX(0deg);
+    }
+}
+
+/* Shadow animations for depth effect */
+.flip-digit-ul.play li.flip-clock-before .up .shadow {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
+    animation: showShadow 0.5s linear both;
+}
+
+.flip-digit-ul.play li.flip-clock-active .up .shadow {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
+    animation: hideShadow 0.5s 0.3s linear both;
+}
+
+.flip-digit-ul.play li.flip-clock-before .down .shadow {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.1) 100%);
+    animation: showShadow 0.5s linear both;
+}
+
+.flip-digit-ul.play li.flip-clock-active .down .shadow {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.1) 100%);
+    animation: hideShadow 0.5s 0.2s linear both;
+}
+
+@keyframes showShadow {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes hideShadow {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.flip-label {
+    font-size: 0.55em;
+    color: var(--counter-text-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 5px;
+}
+
+/* ============================================
+   ANIMATION CONTAINER (for celebration particles)
+   ============================================ */
+
+.animation-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* ============================================
+   CELEBRATION PARTICLES
+   ============================================ */
+
+.particle {
+    position: absolute;
+    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Android Emoji', 'EmojiSymbols', sans-serif;
+    font-size: calc(0.9em * var(--particle-size, 1));
+    opacity: 0;
+    filter: opacity(0.6);
+}
+
+/* Celebration particles use snowfall animation */
+.celebration-particle {
+    top: -10%;
+    animation-name: celebrationFall;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+/* Celebration fall animation (snow-style) */
+@keyframes celebrationFall {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    25% {
+        transform: translateY(25vh) translateX(15px) rotate(90deg);
+    }
+
+    50% {
+        transform: translateY(50vh) translateX(-10px) rotate(180deg);
+    }
+
+    75% {
+        transform: translateY(75vh) translateX(20px) rotate(270deg);
+    }
+
+    90% {
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(110vh) translateX(-5px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
+
+/* Icon bounce */
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+/* ============================================
+   RESPONSIVE SCALING - Container Queries
+   ============================================ */
+
+/* Scale 1.1x - Slightly wider columns (350px+) */
+@container countdown-module (min-width: 350px) {
+    .mmm-animated-countdowns.stacked-mode {
+        gap: 28px;
+    }
+
+    .event-icon {
+        font-size: 2.75em;
+    }
+
+    .event-name {
+        font-size: 1.76em;
+        max-width: 330px;
+    }
+
+    /* Digital */
+    .countdown-units.countdown-digital {
+        gap: 9px;
+    }
+
+    .time-unit {
+        padding: 9px 7px;
+        min-width: 75px;
+    }
+
+    .time-value {
+        font-size: 1.76em;
+    }
+
+    .time-label {
+        font-size: 0.55em;
+    }
+
+    /* Rings */
+    .countdown-rings {
+        gap: 9px;
+    }
+
+    .ring-container {
+        width: 75px;
+        height: 75px;
+    }
+
+    .ring-value {
+        font-size: 1.32em;
+    }
+
+    .ring-label {
+        font-size: 0.55em;
+    }
+
+    /* Hourglass */
+    .countdown-hourglass {
+        gap: 9px;
+    }
+
+    .hourglass-container {
+        width: 75px;
+    }
+
+    .hourglass-svg {
+        height: 61px;
+    }
+
+    .hourglass-value {
+        font-size: 1.32em;
+    }
+
+    .hourglass-label {
+        font-size: 0.55em;
+    }
+
+    /* Flip */
+    .countdown-flip {
+        gap: 9px;
+    }
+
+    .flip-digit-ul {
+        width: 35px;
+        height: 59px;
+        font-size: 37px;
+        line-height: 59px;
+    }
+
+    .flip-digit-li a div.up:after {
+        top: 29px;
+    }
+
+    .flip-label {
+        font-size: 0.6em;
+    }
+}
+
+/* Scale 1.25x - Medium columns (420px+) */
+@container countdown-module (min-width: 420px) {
+    .mmm-animated-countdowns.stacked-mode {
+        gap: 31px;
+    }
+
+    .event-icon {
+        font-size: 3.1em;
+    }
+
+    .event-name {
+        font-size: 2em;
+        max-width: 375px;
+    }
+
+    /* Digital */
+    .countdown-units.countdown-digital {
+        gap: 10px;
+    }
+
+    .time-unit {
+        padding: 10px 8px;
+        min-width: 85px;
+    }
+
+    .time-value {
+        font-size: 2em;
+    }
+
+    .time-label {
+        font-size: 0.63em;
+    }
+
+    /* Rings */
+    .countdown-rings {
+        gap: 10px;
+    }
+
+    .ring-container {
+        width: 85px;
+        height: 85px;
+    }
+
+    .ring-value {
+        font-size: 1.5em;
+    }
+
+    .ring-label {
+        font-size: 0.63em;
+    }
+
+    /* Hourglass */
+    .countdown-hourglass {
+        gap: 10px;
+    }
+
+    .hourglass-container {
+        width: 85px;
+    }
+
+    .hourglass-svg {
+        height: 69px;
+    }
+
+    .hourglass-value {
+        font-size: 1.5em;
+    }
+
+    .hourglass-label {
+        font-size: 0.63em;
+    }
+
+    /* Flip */
+    .countdown-flip {
+        gap: 10px;
+    }
+
+    .flip-digit-ul {
+        width: 40px;
+        height: 68px;
+        font-size: 43px;
+        line-height: 68px;
+    }
+
+    .flip-digit-li a div.up:after {
+        top: 33px;
+    }
+
+    .flip-label {
+        font-size: 0.69em;
+    }
+}
+
+/* Scale 1.45x - Wide columns (520px+) */
+@container countdown-module (min-width: 520px) {
+    .mmm-animated-countdowns.stacked-mode {
+        gap: 36px;
+    }
+
+    .event-icon {
+        font-size: 3.6em;
+    }
+
+    .event-name {
+        font-size: 2.3em;
+        max-width: 435px;
+    }
+
+    /* Digital */
+    .countdown-units.countdown-digital {
+        gap: 12px;
+    }
+
+    .time-unit {
+        padding: 12px 9px;
+        min-width: 99px;
+    }
+
+    .time-value {
+        font-size: 2.3em;
+    }
+
+    .time-label {
+        font-size: 0.73em;
+    }
+
+    /* Rings */
+    .countdown-rings {
+        gap: 12px;
+    }
+
+    .ring-container {
+        width: 99px;
+        height: 99px;
+    }
+
+    .ring-value {
+        font-size: 1.74em;
+    }
+
+    .ring-label {
+        font-size: 0.73em;
+    }
+
+    /* Hourglass */
+    .countdown-hourglass {
+        gap: 12px;
+    }
+
+    .hourglass-container {
+        width: 99px;
+    }
+
+    .hourglass-svg {
+        height: 80px;
+    }
+
+    .hourglass-value {
+        font-size: 1.74em;
+    }
+
+    .hourglass-label {
+        font-size: 0.73em;
+    }
+
+    /* Flip */
+    .countdown-flip {
+        gap: 12px;
+    }
+
+    .flip-digit-ul {
+        width: 46px;
+        height: 78px;
+        font-size: 49px;
+        line-height: 78px;
+    }
+
+    .flip-digit-li a div.up:after {
+        top: 38px;
+    }
+
+    .flip-label {
+        font-size: 0.8em;
+    }
+}
+
+/* Scale 1.7x - Very wide columns (650px+) */
+@container countdown-module (min-width: 650px) {
+    .mmm-animated-countdowns.stacked-mode {
+        gap: 43px;
+    }
+
+    .event-icon {
+        font-size: 4.25em;
+    }
+
+    .event-name {
+        font-size: 2.7em;
+        max-width: 510px;
+    }
+
+    /* Digital */
+    .countdown-units.countdown-digital {
+        gap: 14px;
+    }
+
+    .time-unit {
+        padding: 14px 10px;
+        min-width: 116px;
+    }
+
+    .time-value {
+        font-size: 2.7em;
+    }
+
+    .time-label {
+        font-size: 0.85em;
+    }
+
+    /* Rings */
+    .countdown-rings {
+        gap: 14px;
+    }
+
+    .ring-container {
+        width: 116px;
+        height: 116px;
+    }
+
+    .ring-value {
+        font-size: 2.04em;
+    }
+
+    .ring-label {
+        font-size: 0.85em;
+    }
+
+    /* Hourglass */
+    .countdown-hourglass {
+        gap: 14px;
+    }
+
+    .hourglass-container {
+        width: 116px;
+    }
+
+    .hourglass-svg {
+        height: 94px;
+    }
+
+    .hourglass-value {
+        font-size: 2.04em;
+    }
+
+    .hourglass-label {
+        font-size: 0.85em;
+    }
+
+    /* Flip */
+    .countdown-flip {
+        gap: 14px;
+    }
+
+    .flip-digit-ul {
+        width: 54px;
+        height: 92px;
+        font-size: 58px;
+        line-height: 92px;
+    }
+
+    .flip-digit-li a div.up:after {
+        top: 45px;
+    }
+
+    .flip-label {
+        font-size: 0.94em;
+    }
+}
+
+/* Scale 2x - Extra wide / full-width (800px+) */
+@container countdown-module (min-width: 800px) {
+    .mmm-animated-countdowns.stacked-mode {
+        gap: 50px;
+    }
+
+    .event-icon {
+        font-size: 5em;
+    }
+
+    .event-name {
+        font-size: 3.2em;
+        max-width: 600px;
+    }
+
+    /* Digital */
+    .countdown-units.countdown-digital {
+        gap: 16px;
+    }
+
+    .time-unit {
+        padding: 16px 12px;
+        min-width: 136px;
+    }
+
+    .time-value {
+        font-size: 3.2em;
+    }
+
+    .time-label {
+        font-size: 1em;
+    }
+
+    /* Rings */
+    .countdown-rings {
+        gap: 16px;
+    }
+
+    .ring-container {
+        width: 136px;
+        height: 136px;
+    }
+
+    .ring-value {
+        font-size: 2.4em;
+    }
+
+    .ring-label {
+        font-size: 1em;
+    }
+
+    /* Hourglass */
+    .countdown-hourglass {
+        gap: 16px;
+    }
+
+    .hourglass-container {
+        width: 136px;
+    }
+
+    .hourglass-svg {
+        height: 110px;
+    }
+
+    .hourglass-value {
+        font-size: 2.4em;
+    }
+
+    .hourglass-label {
+        font-size: 1em;
+    }
+
+    /* Flip */
+    .countdown-flip {
+        gap: 16px;
+    }
+
+    .flip-digit-ul {
+        width: 64px;
+        height: 108px;
+        font-size: 68px;
+        line-height: 108px;
+    }
+
+    .flip-digit-li a div.up:after {
+        top: 53px;
+    }
+
+    .flip-label {
+        font-size: 1.1em;
+    }
+}
+
+/* ============================================
+   ARRIVED STATE - Pulsing Glow Animation
+   ============================================ */
+
+/* Digital counter arrived glow - glow the digit boxes */
+.countdown-container.arrived .time-unit {
+    animation: arrivedBoxGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes arrivedBoxGlow {
+    0%, 100% {
+        box-shadow: 0 0 10px var(--accent-color, #ffd700),
+                    0 0 20px var(--accent-color, #ffd700);
+    }
+    50% {
+        box-shadow: 0 0 20px var(--accent-color, #ffd700),
+                    0 0 40px var(--accent-color, #ffd700),
+                    0 0 60px var(--accent-color, #ffd700);
+    }
+}
+
+/* Rings counter arrived glow - glow the ring containers */
+.countdown-container.arrived .ring-container {
+    animation: arrivedBoxGlow 1.5s ease-in-out infinite;
+    border-radius: 50%;
+}
+
+/* Flip counter arrived glow - glow the digit boxes */
+.countdown-container.arrived .flip-digit-ul {
+    animation: arrivedBoxGlow 1.5s ease-in-out infinite;
+}
+
+/* Hourglass counter arrived glow - glow the hourglass containers */
+.countdown-container.arrived .hourglass-container {
+    animation: arrivedBoxGlow 1.5s ease-in-out infinite;
+    border-radius: 8px;
+}
