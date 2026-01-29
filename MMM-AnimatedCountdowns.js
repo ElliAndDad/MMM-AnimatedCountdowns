@@ -74,16 +74,16 @@ Module.register("MMM-AnimatedCountdowns", {
     parseEventDate: function (dateStr, timeStr) {
         let eventDate;
 
-        if (dateStr.includes('T')) {
+        if (dateStr.includes("T")) {
             eventDate = new Date(dateStr);
         } else if (timeStr) {
-            const timeParts = timeStr.split(':');
-            const hours = timeParts[0] || '00';
-            const minutes = timeParts[1] || '00';
-            const seconds = timeParts[2] || '00';
+            const timeParts = timeStr.split(":");
+            const hours = timeParts[0] || "00";
+            const minutes = timeParts[1] || "00";
+            const seconds = timeParts[2] || "00";
             eventDate = new Date(`${dateStr}T${hours}:${minutes}:${seconds}`);
         } else {
-            const parts = dateStr.split('-');
+            const parts = dateStr.split("-");
             eventDate = new Date(
                 parseInt(parts[0]),
                 parseInt(parts[1]) - 1,
@@ -105,10 +105,14 @@ Module.register("MMM-AnimatedCountdowns", {
 
     // Update just the countdown numbers, not the whole DOM
     updateCountdownNumbers: function () {
-        if (this.events.length === 0) return;
+        if (this.events.length === 0) {
+            return;
+        }
 
         const wrapper = document.getElementById(this.identifier);
-        if (!wrapper) return;
+        if (!wrapper) {
+            return;
+        }
 
         const eventWrappers = wrapper.querySelectorAll(".event-wrapper");
 
@@ -116,7 +120,7 @@ Module.register("MMM-AnimatedCountdowns", {
             if (index < this.events.length) {
                 const event = this.events[index];
                 const timeRemaining = this.getTimeRemaining(event.dateObj);
-                const counterStyle = event.counterStyle || 'flip';
+                const counterStyle = event.counterStyle || "flip";
 
                 if (timeRemaining.arrived) {
                     const isArrivedInDom = eventWrapper.getAttribute("data-arrived") === "true";
@@ -168,7 +172,9 @@ Module.register("MMM-AnimatedCountdowns", {
 
     // Update a single event's display
     updateEventDisplay: function (container, timeRemaining, counterStyle) {
-        if (timeRemaining.arrived) return; // Don't update countdown if event has arrived
+        if (timeRemaining.arrived) {
+            return;
+        } // Don't update countdown if event has arrived
 
         if (counterStyle === "rings") {
             this.updateRingsDisplay(container, timeRemaining);
@@ -190,29 +196,45 @@ Module.register("MMM-AnimatedCountdowns", {
         if (segments.showDays && timeUnits[unitIndex]) {
             const valueEl = timeUnits[unitIndex].querySelector(".time-value");
             const labelEl = timeUnits[unitIndex].querySelector(".time-label");
-            if (valueEl) valueEl.textContent = timeRemaining.days;
-            if (labelEl) labelEl.textContent = timeRemaining.days === 1 ? "day" : "days";
+            if (valueEl) {
+                valueEl.textContent = timeRemaining.days;
+            }
+            if (labelEl) {
+                labelEl.textContent = timeRemaining.days === 1 ? "day" : "days";
+            }
             unitIndex++;
         }
         if (segments.showHours && timeUnits[unitIndex]) {
             const valueEl = timeUnits[unitIndex].querySelector(".time-value");
             const labelEl = timeUnits[unitIndex].querySelector(".time-label");
-            if (valueEl) valueEl.textContent = timeRemaining.hours;
-            if (labelEl) labelEl.textContent = timeRemaining.hours === 1 ? "hour" : "hours";
+            if (valueEl) {
+                valueEl.textContent = timeRemaining.hours;
+            }
+            if (labelEl) {
+                labelEl.textContent = timeRemaining.hours === 1 ? "hour" : "hours";
+            }
             unitIndex++;
         }
         if (segments.showMinutes && timeUnits[unitIndex]) {
             const valueEl = timeUnits[unitIndex].querySelector(".time-value");
             const labelEl = timeUnits[unitIndex].querySelector(".time-label");
-            if (valueEl) valueEl.textContent = timeRemaining.minutes;
-            if (labelEl) labelEl.textContent = timeRemaining.minutes === 1 ? "min" : "mins";
+            if (valueEl) {
+                valueEl.textContent = timeRemaining.minutes;
+            }
+            if (labelEl) {
+                labelEl.textContent = timeRemaining.minutes === 1 ? "min" : "mins";
+            }
             unitIndex++;
         }
         if (segments.showSeconds && timeUnits[unitIndex]) {
             const valueEl = timeUnits[unitIndex].querySelector(".time-value");
             const labelEl = timeUnits[unitIndex].querySelector(".time-label");
-            if (valueEl) valueEl.textContent = timeRemaining.seconds;
-            if (labelEl) labelEl.textContent = timeRemaining.seconds === 1 ? "sec" : "secs";
+            if (valueEl) {
+                valueEl.textContent = timeRemaining.seconds;
+            }
+            if (labelEl) {
+                labelEl.textContent = timeRemaining.seconds === 1 ? "sec" : "secs";
+            }
             unitIndex++;
         }
     },
@@ -229,8 +251,12 @@ Module.register("MMM-AnimatedCountdowns", {
             const offset = circumference - (dayPercent / 100) * circumference;
             const progress = rings[ringIndex].querySelector(".ring-progress");
             const valueEl = rings[ringIndex].querySelector(".ring-value");
-            if (progress) progress.style.strokeDashoffset = offset;
-            if (valueEl) valueEl.textContent = timeRemaining.days;
+            if (progress) {
+                progress.style.strokeDashoffset = offset;
+            }
+            if (valueEl) {
+                valueEl.textContent = timeRemaining.days;
+            }
             ringIndex++;
         }
         if (segments.showHours && rings[ringIndex]) {
@@ -238,8 +264,12 @@ Module.register("MMM-AnimatedCountdowns", {
             const offset = circumference - (hourPercent / 100) * circumference;
             const progress = rings[ringIndex].querySelector(".ring-progress");
             const valueEl = rings[ringIndex].querySelector(".ring-value");
-            if (progress) progress.style.strokeDashoffset = offset;
-            if (valueEl) valueEl.textContent = timeRemaining.hours;
+            if (progress) {
+                progress.style.strokeDashoffset = offset;
+            }
+            if (valueEl) {
+                valueEl.textContent = timeRemaining.hours;
+            }
             ringIndex++;
         }
         if (segments.showMinutes && rings[ringIndex]) {
@@ -247,8 +277,12 @@ Module.register("MMM-AnimatedCountdowns", {
             const offset = circumference - (minPercent / 100) * circumference;
             const progress = rings[ringIndex].querySelector(".ring-progress");
             const valueEl = rings[ringIndex].querySelector(".ring-value");
-            if (progress) progress.style.strokeDashoffset = offset;
-            if (valueEl) valueEl.textContent = timeRemaining.minutes;
+            if (progress) {
+                progress.style.strokeDashoffset = offset;
+            }
+            if (valueEl) {
+                valueEl.textContent = timeRemaining.minutes;
+            }
             ringIndex++;
         }
         if (segments.showSeconds && rings[ringIndex]) {
@@ -256,8 +290,12 @@ Module.register("MMM-AnimatedCountdowns", {
             const offset = circumference - (secPercent / 100) * circumference;
             const progress = rings[ringIndex].querySelector(".ring-progress");
             const valueEl = rings[ringIndex].querySelector(".ring-value");
-            if (progress) progress.style.strokeDashoffset = offset;
-            if (valueEl) valueEl.textContent = timeRemaining.seconds;
+            if (progress) {
+                progress.style.strokeDashoffset = offset;
+            }
+            if (valueEl) {
+                valueEl.textContent = timeRemaining.seconds;
+            }
             ringIndex++;
         }
     },
@@ -268,7 +306,9 @@ Module.register("MMM-AnimatedCountdowns", {
         let hgIndex = 0;
 
         const updateHourglass = (container, percent, value, maxValue) => {
-            if (!container) return;
+            if (!container) {
+                return;
+            }
 
             const topFill = percent;
             const bottomFill = 100 - percent;
@@ -306,8 +346,12 @@ Module.register("MMM-AnimatedCountdowns", {
                 setTimeout(function () {
                     flipper.classList.remove("flip-animation");
 
-                    if (topSand) topSand.style.transition = 'none';
-                    if (bottomSand) bottomSand.style.transition = 'none';
+                    if (topSand) {
+                        topSand.style.transition = "none";
+                    }
+                    if (bottomSand) {
+                        bottomSand.style.transition = "none";
+                    }
 
                     if (topSand) {
                         topSand.setAttribute("y", 50 - topSandMaxHeight);
@@ -323,8 +367,12 @@ Module.register("MMM-AnimatedCountdowns", {
                     }
 
                     void (topSand && topSand.getBBox());
-                    if (topSand) topSand.style.transition = '';
-                    if (bottomSand) bottomSand.style.transition = '';
+                    if (topSand) {
+                        topSand.style.transition = "";
+                    }
+                    if (bottomSand) {
+                        bottomSand.style.transition = "";
+                    }
 
                     setTimeout(function () {
                         container.setAttribute("data-flipping", "false");
@@ -386,29 +434,31 @@ Module.register("MMM-AnimatedCountdowns", {
         let groupIndex = 0;
 
         const updateFlipGroup = (group, newValue, numDigits) => {
-            if (!group) return;
-            const padded = String(newValue).padStart(numDigits, '0');
-            const digitUls = group.querySelectorAll('.flip-digit-ul');
+            if (!group) {
+                return;
+            }
+            const padded = String(newValue).padStart(numDigits, "0");
+            const digitUls = group.querySelectorAll(".flip-digit-ul");
 
             digitUls.forEach((ul, i) => {
                 const newDigit = padded[i];
-                const currentDigit = ul.getAttribute('data-value');
+                const currentDigit = ul.getAttribute("data-value");
 
                 if (currentDigit === newDigit) {
                     return;
                 }
 
-                const activeLi = ul.querySelector('.flip-clock-active');
-                const beforeLi = ul.querySelector('.flip-clock-before');
+                const activeLi = ul.querySelector(".flip-clock-active");
+                const beforeLi = ul.querySelector(".flip-clock-before");
 
-                activeLi.querySelectorAll('.inn').forEach(inn => inn.textContent = newDigit);
-                beforeLi.querySelectorAll('.inn').forEach(inn => inn.textContent = currentDigit);
+                activeLi.querySelectorAll(".inn").forEach(inn => inn.textContent = newDigit);
+                beforeLi.querySelectorAll(".inn").forEach(inn => inn.textContent = currentDigit);
 
-                ul.classList.remove('play');
+                ul.classList.remove("play");
                 void ul.offsetWidth;
-                ul.classList.add('play');
+                ul.classList.add("play");
 
-                ul.setAttribute('data-value', newDigit);
+                ul.setAttribute("data-value", newDigit);
             });
         };
 
@@ -510,7 +560,7 @@ Module.register("MMM-AnimatedCountdowns", {
         if (timeRemaining.arrived) {
             countdownEl.classList.add("arrived");
         }
-        const counterStyle = event.counterStyle || 'flip';
+        const counterStyle = event.counterStyle || "flip";
         countdownEl.innerHTML = this.buildCountdownHTML(timeRemaining, counterStyle);
         contentContainer.appendChild(countdownEl);
 
@@ -547,7 +597,7 @@ Module.register("MMM-AnimatedCountdowns", {
 
     // Build countdown HTML
     buildCountdownHTML: function (time, counterStyle) {
-        let html = '';
+        let html = "";
 
         if (counterStyle === "rings") {
             html += this.buildRingsCountdown(time);
@@ -563,7 +613,7 @@ Module.register("MMM-AnimatedCountdowns", {
     },
 
     // Calculate which segments should be shown (always show all four)
-    getVisibleSegments: function (time) {
+    getVisibleSegments: function (_time) {
         return { showDays: true, showHours: true, showMinutes: true, showSeconds: true };
     },
 
@@ -585,7 +635,7 @@ Module.register("MMM-AnimatedCountdowns", {
             html += this.buildTimeUnit(time.seconds, "sec", "secs");
         }
 
-        html += '</div>';
+        html += "</div>";
         return html;
     },
 
@@ -607,13 +657,13 @@ Module.register("MMM-AnimatedCountdowns", {
             html += this.buildFlipGroup(time.seconds, "secs", 2);
         }
 
-        html += '</div>';
+        html += "</div>";
         return html;
     },
 
     // Build a group of flip digits with a label
     buildFlipGroup: function (value, label, numDigits) {
-        const padded = String(value).padStart(numDigits, '0');
+        const padded = String(value).padStart(numDigits, "0");
 
         let html = `<div class="flip-group" data-label="${label}">`;
         html += '<div class="flip-digits">';
@@ -622,9 +672,9 @@ Module.register("MMM-AnimatedCountdowns", {
             html += this.buildFlipDigit(padded[i]);
         }
 
-        html += '</div>';
+        html += "</div>";
         html += `<span class="flip-label">${label}</span>`;
-        html += '</div>';
+        html += "</div>";
 
         return html;
     },
@@ -683,7 +733,7 @@ Module.register("MMM-AnimatedCountdowns", {
             html += this.buildRing(time.seconds, "sec", secPercent);
         }
 
-        html += '</div>';
+        html += "</div>";
         return html;
     },
 
@@ -731,7 +781,7 @@ Module.register("MMM-AnimatedCountdowns", {
             html += this.buildHourglass(time.seconds, "sec", secPercent);
         }
 
-        html += '</div>';
+        html += "</div>";
         return html;
     },
 
