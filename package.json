@@ -1,0 +1,30 @@
+{
+  "name": "mmm-animatedcountdowns",
+  "version": "1.0.0",
+  "description": "A MagicMirror² module for displaying animated countdown timers with celebration effects",
+  "main": "MMM-AnimatedCountdowns.js",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ElliAndDad/MMM-AnimatedCountdowns.git"
+  },
+  "keywords": [
+    "MagicMirror",
+    "MagicMirror2",
+    "countdown",
+    "timer",
+    "animation"
+  ],
+  "author": "ElliAndDad",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ElliAndDad/MMM-AnimatedCountdowns/issues"
+  },
+  "homepage": "https://github.com/ElliAndDad/MMM-AnimatedCountdowns#readme",
+  "devDependencies": {
+    "eslint": "^8.57.0"
+  }
+}
