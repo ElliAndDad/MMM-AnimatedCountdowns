@@ -25,6 +25,6 @@
   },
   "homepage": "https://github.com/ElliAndDad/MMM-AnimatedCountdowns#readme",
   "devDependencies": {
-    "eslint": "^8.57.0"
+    "eslint": "^9.39.2"
   }
 }
