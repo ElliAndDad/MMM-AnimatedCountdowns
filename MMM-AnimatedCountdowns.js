@@ -6,682 +6,1173 @@
  */
 
 Module.register("MMM-AnimatedCountdowns", {
+  defaults: {
+    colorMode: true, // Set to false for MM-style inverted grayscale
+    showPassedEventsForHours: 24, // Hours to show countdown after event passes
+    updateInterval: 1000, // Update interval in ms
+    defaultCelebrationEmojis: ["🎉", "🌟", "🍾"], // Default celebration emojis (can be overridden per-event)
+    celebrationParticleCount: 30, // Number of particles in celebration animation
+    events: [] // Array of event objects (see README for configuration)
+    /*
+     * Event object properties:
+     *   name: (required) Display name for the event
+     *   date: (required for one-time events) Target date "YYYY-MM-DD"
+     *   time: Target time "HH:MM" or "HH:MM:SS"
+     *   icon: Emoji to display above the event name (null to hide)
+     *   counterStyle: "digital", "rings", "flip", or "hourglass" (default: "flip")
+     *   textColor: Hex color for the event name (default: "#ffd700")
+     *   accentColor: Hex color for accent elements and arrival glow effect (default: "#ffd700")
+     *   counterTextColor: Hex color for counter numbers/labels (default: "#ffffff")
+     *   sandColor: Hex color for hourglass sand (default: "#e2ca76")
+     *   celebrateOnDay: Show celebration animation when event arrives (default: true)
+     *   celebrationEmojis: Custom emojis array for this event's celebration
+     *
+     * Recurring event properties:
+     *   recurrence: "weekly", "monthly", or "yearly"
+     *   targetDay: Day of week (0-6, Sun-Sat) for weekly, or day of month (1-31) for monthly/yearly
+     *   targetMonth: Month (1-12) for yearly recurrence
+     *   showFromDay: (weekly only) Day of week to start showing countdown (0-6)
+     *   showDaysBefore: (monthly/yearly) Number of days before event to start showing countdown
+     */
+  },
 
-    defaults: {
-        colorMode: true,                                // Set to false for MM-style inverted grayscale
-        showPassedEventsForHours: 24,                   // Hours to show countdown after event passes
-        updateInterval: 1000,                           // Update interval in ms
-        defaultCelebrationEmojis: ["🎉", "🌟", "🍾"],   // Default celebration emojis (can be overridden per-event)
-        celebrationParticleCount: 30,                   // Number of particles in celebration animation
-        events: []                                      // Array of event objects (see README for configuration)
-        /*
-         * Event object properties:
-         *   name: (required) Display name for the event
-         *   date: (required) Target date "YYYY-MM-DD"
-         *   time: Target time "HH:MM" or "HH:MM:SS" (alternative to time in date)
-         *   icon: Emoji to display above the event name (null to hide)
-         *   counterStyle: "digital", "rings", "flip", or "hourglass" (default: "flip")
-         *   textColor: Hex color for the event name (default: "#ffd700")
-         *   accentColor: Hex color for accent elements and arrival glow effect (default: "#ffd700")
-         *   counterTextColor: Hex color for counter numbers/labels (default: "#ffffff")
-         *   celebrateOnDay: Show celebration animation when event arrives (default: true)
-         *   celebrationEmojis: Custom emojis array for this event's celebration
-         */
-    },
+  getScripts: function () {
+    return [];
+  },
 
-    getScripts: function () {
-        return [];
-    },
+  getStyles: function () {
+    return [this.file("MMM-AnimatedCountdowns.css")];
+  },
 
-    getStyles: function () {
-        return [
-            this.file("MMM-AnimatedCountdowns.css")
-        ];
-    },
+  // Get current time
+  getCurrentTime: function () {
+    return new Date();
+  },
 
-    // Initialize module
-    start: function () {
-        Log.info("Starting module: " + this.name);
+  // Initialize module
+  start: function () {
+    Log.info("Starting module: " + this.name);
 
-        this.events = this.processEvents(this.config.events);
+    this.events = this.processEvents(this.config.events);
 
-        Log.info(this.name + ": Processed " + this.events.length + " events");
+    Log.info(this.name + ": Processed " + this.events.length + " events");
 
-        // Start the update timer
-        this.scheduleUpdate();
-    },
+    // Start the update timer
+    this.scheduleUpdate();
 
-    // Process events - parse dates and filter old passed events
-    processEvents: function (events) {
-        const now = new Date(Date.now());
-        const cutoffTime = this.config.showPassedEventsForHours * 60 * 60 * 1000; // Convert hours to ms
+    // Add window resize listener to readjust column width
+    const self = this;
+    window.addEventListener("resize", function () {
+      clearTimeout(self.resizeTimer);
+      self.resizeTimer = setTimeout(function () {
+        self.adjustWidthToColumn();
+      }, 250);
+    });
+  },
 
-        return events
-            .map(event => {
-                const eventDate = this.parseEventDate(event.date, event.time);
-                const timeSinceEvent = now - eventDate;
-                return {
-                    ...event,
-                    dateObj: eventDate,
-                    isExpired: timeSinceEvent > cutoffTime
-                };
-            })
-            .filter(event => !event.isExpired)
-            .sort((a, b) => a.dateObj - b.dateObj);
-    },
+  // Handle notifications from MagicMirror
+  notificationReceived: function (notification, payload, sender) {
+    if (notification === "DOM_OBJECTS_CREATED") {
+      // Adjust width to match column after all modules are rendered
+      this.adjustWidthToColumn();
+    }
+  },
 
-    // Parse event date with optional time
-    parseEventDate: function (dateStr, timeStr) {
-        let eventDate;
+  // Adjust module width to match the widest non-countdown module in the same visual column
+  adjustWidthToColumn: function () {
+    const self = this;
 
-        if (dateStr.includes("T")) {
-            eventDate = new Date(dateStr);
-        } else if (timeStr) {
-            const timeParts = timeStr.split(":");
-            const hours = timeParts[0] || "00";
-            const minutes = timeParts[1] || "00";
-            const seconds = timeParts[2] || "00";
-            eventDate = new Date(`${dateStr}T${hours}:${minutes}:${seconds}`);
-        } else {
-            const parts = dateStr.split("-");
-            eventDate = new Date(
-                parseInt(parts[0]),
-                parseInt(parts[1]) - 1,
-                parseInt(parts[2]),
-                0, 0, 0, 0
-            );
+    // Small delay to ensure DOM is fully rendered and measured
+    setTimeout(function () {
+      const wrapper = document.getElementById(self.identifier);
+      if (!wrapper) {
+        return;
+      }
+
+      // Find the module container and region
+      const moduleDiv = wrapper.closest(".module");
+      if (!moduleDiv) {
+        return;
+      }
+
+      const region = moduleDiv.closest(".region");
+      if (!region) {
+        return;
+      }
+
+      // Determine which visual column we're in based on region classes
+      // MagicMirror regions: top_left/bottom_left share left column,
+      // top_right/bottom_right share right column, etc.
+      let columnContainers = [];
+
+      if (region.classList.contains("left")) {
+        // Left column: includes top.left and bottom.left regions
+        columnContainers = document.querySelectorAll(".region.left .container");
+      } else if (region.classList.contains("right")) {
+        // Right column: includes top.right and bottom.right regions
+        columnContainers = document.querySelectorAll(
+          ".region.right .container"
+        );
+      } else if (
+        region.classList.contains("center") &&
+        !region.classList.contains("middle")
+      ) {
+        // Center column: top.center and bottom.center (excluding middle_center)
+        columnContainers = document.querySelectorAll(
+          ".region.center:not(.middle) .container"
+        );
+      } else {
+        // Full width or middle regions - just use this container
+        const container = moduleDiv.closest(".container");
+        if (container) {
+          columnContainers = [container];
         }
+      }
 
-        return eventDate;
-    },
+      if (columnContainers.length === 0) {
+        return;
+      }
 
-    // Schedule countdown update
-    scheduleUpdate: function () {
-        const self = this;
-        setInterval(function () {
-            self.updateCountdownNumbers();
-        }, this.config.updateInterval);
-    },
+      // Find max width of non-countdown modules across all regions in this column
+      let maxWidth = 0;
+      let maxCountdownWidth = 0;
 
-    // Update just the countdown numbers, not the whole DOM
-    updateCountdownNumbers: function () {
-        if (this.events.length === 0) {
-            return;
-        }
-
-        const wrapper = document.getElementById(this.identifier);
-        if (!wrapper) {
-            return;
-        }
-
-        const eventWrappers = wrapper.querySelectorAll(".event-wrapper");
-
-        eventWrappers.forEach((eventWrapper, index) => {
-            if (index < this.events.length) {
-                const event = this.events[index];
-                const timeRemaining = this.getTimeRemaining(event.dateObj);
-                const counterStyle = event.counterStyle || "flip";
-
-                if (timeRemaining.arrived) {
-                    const isArrivedInDom = eventWrapper.getAttribute("data-arrived") === "true";
-                    if (!isArrivedInDom) {
-                        // Update display to show zeros (pass arrived: false to allow update)
-                        const zeroTime = { days: 0, hours: 0, minutes: 0, seconds: 0, arrived: false };
-                        this.updateEventDisplay(eventWrapper, zeroTime, counterStyle);
-                        // Then mark as arrived and add celebration
-                        this.markEventArrived(eventWrapper, event);
-                    }
-                    // Don't update display anymore once arrived
-                    return;
-                }
-
-                this.updateEventDisplay(eventWrapper, timeRemaining, counterStyle);
+      columnContainers.forEach(function (container) {
+        const allModules = container.querySelectorAll(".module");
+        allModules.forEach(function (mod) {
+          // Use getBoundingClientRect for precise decimal width
+          const width = mod.getBoundingClientRect().width;
+          if (mod.classList.contains("MMM-AnimatedCountdowns")) {
+            // Track widest countdown module as fallback
+            if (width > maxCountdownWidth) {
+              maxCountdownWidth = width;
             }
+          } else {
+            // Track widest non-countdown module
+            if (width > maxWidth) {
+              maxWidth = width;
+            }
+          }
+        });
+      });
+
+      // Use non-countdown max, or fall back to countdown max if no other modules
+      const targetWidth = maxWidth > 0 ? maxWidth : maxCountdownWidth;
+
+      // Apply target width to ALL countdown modules in this column
+      if (targetWidth > 0) {
+        columnContainers.forEach(function (container) {
+          const countdownWrappers = container.querySelectorAll(
+            ".module.MMM-AnimatedCountdowns .mmm-animated-countdowns"
+          );
+          countdownWrappers.forEach(function (cdMod) {
+            cdMod.style.width = targetWidth + "px";
+          });
         });
 
-        // Re-process events to remove any that have expired
-        const newEvents = this.processEvents(this.config.events);
-        if (newEvents.length !== this.events.length) {
-            this.events = newEvents;
-            this.updateDom(0);
-        }
-    },
+        Log.info(self.name + ": Set column width to " + targetWidth + "px");
+      }
+    }, 100);
+  },
 
-    // Mark an event as arrived without rebuilding DOM
-    markEventArrived: function(eventWrapper, event) {
-        // Mark as arrived
-        eventWrapper.setAttribute("data-arrived", "true");
+  // Process events - parse dates, handle recurring events, and filter
+  processEvents: function (events) {
+    const now = this.getCurrentTime();
+    const cutoffTime = this.config.showPassedEventsForHours * 60 * 60 * 1000; // Convert hours to ms
 
-        // Add arrived class to countdown container for glow effect
-        const countdownContainer = eventWrapper.querySelector(".countdown-container");
-        if (countdownContainer) {
-            countdownContainer.classList.add("arrived");
-        }
+    return events
+      .map((event) => {
+        let eventDate;
+        let isRecurring = !!event.recurrence;
+        let isInCelebrationPeriod = false;
 
-        // Add celebration animation if enabled
-        const celebrateOnDay = event.celebrateOnDay !== false;
-        if (celebrateOnDay) {
-            const animationContainer = document.createElement("div");
-            animationContainer.className = "animation-container";
-            const emojis = event.celebrationEmojis || this.config.defaultCelebrationEmojis;
-            animationContainer.innerHTML = this.generateCelebrationParticles(this.config.celebrationParticleCount, emojis);
-            // Insert at beginning so it's behind content
-            eventWrapper.insertBefore(animationContainer, eventWrapper.firstChild);
-        }
-    },
+        if (isRecurring) {
+          // Calculate next occurrence for recurring events
+          eventDate = this.getNextOccurrence(event);
 
-    // Update a single event's display
-    updateEventDisplay: function (container, timeRemaining, counterStyle) {
-        if (timeRemaining.arrived) {
-            return;
-        } // Don't update countdown if event has arrived
-
-        if (counterStyle === "rings") {
-            this.updateRingsDisplay(container, timeRemaining);
-        } else if (counterStyle === "flip") {
-            this.updateFlipDisplay(container, timeRemaining);
-        } else if (counterStyle === "hourglass") {
-            this.updateHourglassDisplay(container, timeRemaining);
+          // Check if we're in the celebration period (event just passed)
+          // getNextOccurrence returns the NEXT future occurrence, so we need to check
+          // if the previous occurrence just happened
+          const previousOccurrence = this.getPreviousOccurrence(event);
+          if (previousOccurrence) {
+            const timeSincePrevious = now - previousOccurrence;
+            if (timeSincePrevious >= 0 && timeSincePrevious <= cutoffTime) {
+              isInCelebrationPeriod = true;
+              eventDate = previousOccurrence; // Use the arrived date for display
+            }
+          }
         } else {
-            this.updateDigitalDisplay(container, timeRemaining);
+          // Parse fixed date for one-time events
+          eventDate = this.parseEventDate(event.date, event.time);
         }
-    },
 
-    // Update digital countdown display
-    updateDigitalDisplay: function (wrapper, timeRemaining) {
-        const segments = this.getVisibleSegments(timeRemaining);
-        const timeUnits = wrapper.querySelectorAll(".countdown-digital .time-unit");
-        let unitIndex = 0;
+        const timeSinceEvent = now - eventDate;
 
-        if (segments.showDays && timeUnits[unitIndex]) {
-            const valueEl = timeUnits[unitIndex].querySelector(".time-value");
-            const labelEl = timeUnits[unitIndex].querySelector(".time-label");
-            if (valueEl) {
-                valueEl.textContent = timeRemaining.days;
-            }
-            if (labelEl) {
-                labelEl.textContent = timeRemaining.days === 1 ? "day" : "days";
-            }
-            unitIndex++;
+        // Check if event should be shown
+        let shouldShow = true;
+
+        if (isRecurring) {
+          if (isInCelebrationPeriod) {
+            // Always show during celebration period
+            shouldShow = true;
+          } else {
+            // Check show period restrictions for recurring events
+            shouldShow = this.isWithinShowPeriod(event, eventDate);
+          }
+        } else {
+          // One-time events expire after cutoff time
+          if (timeSinceEvent > cutoffTime) {
+            shouldShow = false;
+          }
         }
-        if (segments.showHours && timeUnits[unitIndex]) {
-            const valueEl = timeUnits[unitIndex].querySelector(".time-value");
-            const labelEl = timeUnits[unitIndex].querySelector(".time-label");
-            if (valueEl) {
-                valueEl.textContent = timeRemaining.hours;
-            }
-            if (labelEl) {
-                labelEl.textContent = timeRemaining.hours === 1 ? "hour" : "hours";
-            }
-            unitIndex++;
-        }
-        if (segments.showMinutes && timeUnits[unitIndex]) {
-            const valueEl = timeUnits[unitIndex].querySelector(".time-value");
-            const labelEl = timeUnits[unitIndex].querySelector(".time-label");
-            if (valueEl) {
-                valueEl.textContent = timeRemaining.minutes;
-            }
-            if (labelEl) {
-                labelEl.textContent = timeRemaining.minutes === 1 ? "min" : "mins";
-            }
-            unitIndex++;
-        }
-        if (segments.showSeconds && timeUnits[unitIndex]) {
-            const valueEl = timeUnits[unitIndex].querySelector(".time-value");
-            const labelEl = timeUnits[unitIndex].querySelector(".time-label");
-            if (valueEl) {
-                valueEl.textContent = timeRemaining.seconds;
-            }
-            if (labelEl) {
-                labelEl.textContent = timeRemaining.seconds === 1 ? "sec" : "secs";
-            }
-            unitIndex++;
-        }
-    },
 
-    // Update rings countdown display
-    updateRingsDisplay: function (wrapper, timeRemaining) {
-        const segments = this.getVisibleSegments(timeRemaining);
-        const rings = wrapper.querySelectorAll(".countdown-rings .ring-container");
-        let ringIndex = 0;
-        const circumference = 2 * Math.PI * 45;
-
-        if (segments.showDays && rings[ringIndex]) {
-            const dayPercent = Math.min((timeRemaining.days / 365) * 100, 100);
-            const offset = circumference - (dayPercent / 100) * circumference;
-            const progress = rings[ringIndex].querySelector(".ring-progress");
-            const valueEl = rings[ringIndex].querySelector(".ring-value");
-            if (progress) {
-                progress.style.strokeDashoffset = offset;
-            }
-            if (valueEl) {
-                valueEl.textContent = timeRemaining.days;
-            }
-            ringIndex++;
-        }
-        if (segments.showHours && rings[ringIndex]) {
-            const hourPercent = (timeRemaining.hours / 24) * 100;
-            const offset = circumference - (hourPercent / 100) * circumference;
-            const progress = rings[ringIndex].querySelector(".ring-progress");
-            const valueEl = rings[ringIndex].querySelector(".ring-value");
-            if (progress) {
-                progress.style.strokeDashoffset = offset;
-            }
-            if (valueEl) {
-                valueEl.textContent = timeRemaining.hours;
-            }
-            ringIndex++;
-        }
-        if (segments.showMinutes && rings[ringIndex]) {
-            const minPercent = (timeRemaining.minutes / 60) * 100;
-            const offset = circumference - (minPercent / 100) * circumference;
-            const progress = rings[ringIndex].querySelector(".ring-progress");
-            const valueEl = rings[ringIndex].querySelector(".ring-value");
-            if (progress) {
-                progress.style.strokeDashoffset = offset;
-            }
-            if (valueEl) {
-                valueEl.textContent = timeRemaining.minutes;
-            }
-            ringIndex++;
-        }
-        if (segments.showSeconds && rings[ringIndex]) {
-            const secPercent = (timeRemaining.seconds / 60) * 100;
-            const offset = circumference - (secPercent / 100) * circumference;
-            const progress = rings[ringIndex].querySelector(".ring-progress");
-            const valueEl = rings[ringIndex].querySelector(".ring-value");
-            if (progress) {
-                progress.style.strokeDashoffset = offset;
-            }
-            if (valueEl) {
-                valueEl.textContent = timeRemaining.seconds;
-            }
-            ringIndex++;
-        }
-    },
-
-    // Update hourglass countdown display
-    updateHourglassDisplay: function (wrapper, timeRemaining) {
-        const hourglasses = wrapper.querySelectorAll(".countdown-hourglass .hourglass-container");
-        let hgIndex = 0;
-
-        const updateHourglass = (container, percent, value, maxValue) => {
-            if (!container) {
-                return;
-            }
-
-            const topFill = percent;
-            const bottomFill = 100 - percent;
-
-            const topSandMaxHeight = 34;
-            const topSandHeight = (topFill / 100) * topSandMaxHeight;
-            const topSandY = 50 - topSandHeight;
-
-            const bottomSandMaxHeight = 34;
-            const bottomSandHeight = (bottomFill / 100) * bottomSandMaxHeight;
-            const bottomSandY = 84 - bottomSandHeight;
-
-            const topSand = container.querySelector(".hourglass-sand-top");
-            const bottomSand = container.querySelector(".hourglass-sand-bottom");
-            const valueEl = container.querySelector(".hourglass-value");
-            const stream = container.querySelector(".hourglass-stream");
-            const flipper = container.querySelector(".hourglass-flipper");
-
-            const lastValue = parseInt(container.getAttribute("data-last-value") || "0");
-            const needsFlip = value > lastValue + (maxValue / 2);
-
-            container.setAttribute("data-last-value", value);
-
-            if (needsFlip && flipper) {
-                container.setAttribute("data-flipping", "true");
-
-                flipper.classList.remove("flip-animation");
-                void flipper.offsetWidth;
-                flipper.classList.add("flip-animation");
-
-                if (valueEl) {
-                    valueEl.textContent = value;
-                }
-
-                setTimeout(function () {
-                    flipper.classList.remove("flip-animation");
-
-                    if (topSand) {
-                        topSand.style.transition = "none";
-                    }
-                    if (bottomSand) {
-                        bottomSand.style.transition = "none";
-                    }
-
-                    if (topSand) {
-                        topSand.setAttribute("y", 50 - topSandMaxHeight);
-                        topSand.setAttribute("height", topSandMaxHeight);
-                    }
-                    if (bottomSand) {
-                        bottomSand.setAttribute("y", 84);
-                        bottomSand.setAttribute("height", 0);
-                    }
-                    if (stream) {
-                        stream.style.opacity = "1";
-                        stream.setAttribute("y2", 82);
-                    }
-
-                    void (topSand && topSand.getBBox());
-                    if (topSand) {
-                        topSand.style.transition = "";
-                    }
-                    if (bottomSand) {
-                        bottomSand.style.transition = "";
-                    }
-
-                    setTimeout(function () {
-                        container.setAttribute("data-flipping", "false");
-                    }, 100);
-                }, 500);
-
-                return;
-            }
-
-            if (container.getAttribute("data-flipping") === "true") {
-                return;
-            }
-
-            if (topSand) {
-                topSand.setAttribute("y", topSandY);
-                topSand.setAttribute("height", topSandHeight);
-            }
-            if (bottomSand) {
-                bottomSand.setAttribute("y", bottomSandY);
-                bottomSand.setAttribute("height", bottomSandHeight);
-            }
-            if (valueEl) {
-                valueEl.textContent = value;
-            }
-            if (stream) {
-                stream.setAttribute("y2", Math.min(Math.max(52, bottomSandY), 82));
-                stream.style.opacity = (topFill > 2) ? "1" : "0";
-            }
+        return {
+          ...event,
+          dateObj: eventDate,
+          isRecurring: isRecurring,
+          isInCelebrationPeriod: isInCelebrationPeriod,
+          shouldShow: shouldShow
         };
+      })
+      .filter((event) => event.shouldShow)
+      .sort((a, b) => a.dateObj - b.dateObj);
+  },
 
-        const segments = this.getVisibleSegments(timeRemaining);
+  // Parse event date with optional time
+  parseEventDate: function (dateStr, timeStr) {
+    let eventDate;
 
-        if (segments.showDays && hourglasses[hgIndex]) {
-            const dayPercent = Math.min((timeRemaining.days / 365) * 100, 100);
-            updateHourglass(hourglasses[hgIndex], dayPercent, timeRemaining.days, 365);
-            hgIndex++;
-        }
-        if (segments.showHours && hourglasses[hgIndex]) {
-            const hourPercent = (timeRemaining.hours / 24) * 100;
-            updateHourglass(hourglasses[hgIndex], hourPercent, timeRemaining.hours, 24);
-            hgIndex++;
-        }
-        if (segments.showMinutes && hourglasses[hgIndex]) {
-            const minPercent = (timeRemaining.minutes / 60) * 100;
-            updateHourglass(hourglasses[hgIndex], minPercent, timeRemaining.minutes, 60);
-            hgIndex++;
-        }
-        if (segments.showSeconds && hourglasses[hgIndex]) {
-            const secPercent = (timeRemaining.seconds / 60) * 100;
-            updateHourglass(hourglasses[hgIndex], secPercent, timeRemaining.seconds, 60);
-            hgIndex++;
-        }
-    },
+    if (dateStr.includes("T")) {
+      eventDate = new Date(dateStr);
+    } else if (timeStr) {
+      const timeParts = timeStr.split(":");
+      const hours = timeParts[0] || "00";
+      const minutes = timeParts[1] || "00";
+      const seconds = timeParts[2] || "00";
+      eventDate = new Date(`${dateStr}T${hours}:${minutes}:${seconds}`);
+    } else {
+      const parts = dateStr.split("-");
+      eventDate = new Date(
+        parseInt(parts[0]),
+        parseInt(parts[1]) - 1,
+        parseInt(parts[2]),
+        0,
+        0,
+        0,
+        0
+      );
+    }
 
-    // Update flip countdown display
-    updateFlipDisplay: function (wrapper, timeRemaining) {
-        const segments = this.getVisibleSegments(timeRemaining);
-        const flipGroups = wrapper.querySelectorAll(".countdown-flip .flip-group");
-        let groupIndex = 0;
+    return eventDate;
+  },
 
-        const updateFlipGroup = (group, newValue, numDigits) => {
-            if (!group) {
-                return;
-            }
-            const padded = String(newValue).padStart(numDigits, "0");
-            const digitUls = group.querySelectorAll(".flip-digit-ul");
+  // Calculate the next occurrence for a recurring event
+  getNextOccurrence: function (event) {
+    const now = this.getCurrentTime();
+    const timeParts = (event.time || "00:00").split(":");
+    const hours = parseInt(timeParts[0]) || 0;
+    const minutes = parseInt(timeParts[1]) || 0;
+    const seconds = parseInt(timeParts[2]) || 0;
 
-            digitUls.forEach((ul, i) => {
-                const newDigit = padded[i];
-                const currentDigit = ul.getAttribute("data-value");
+    if (event.recurrence === "weekly") {
+      const targetDay = event.targetDay; // 0-6 (Sun-Sat)
+      let next = new Date(now);
+      next.setHours(hours, minutes, seconds, 0);
 
-                if (currentDigit === newDigit) {
-                    return;
-                }
+      // Calculate days until target day
+      let daysUntil = targetDay - now.getDay();
+      if (daysUntil < 0 || (daysUntil === 0 && next <= now)) {
+        daysUntil += 7;
+      }
 
-                const activeLi = ul.querySelector(".flip-clock-active");
-                const beforeLi = ul.querySelector(".flip-clock-before");
+      next.setDate(next.getDate() + daysUntil);
+      return next;
+    }
 
-                activeLi.querySelectorAll(".inn").forEach(inn => inn.textContent = newDigit);
-                beforeLi.querySelectorAll(".inn").forEach(inn => inn.textContent = currentDigit);
+    if (event.recurrence === "monthly") {
+      const targetDay = event.targetDay; // 1-31
+      let next = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        targetDay,
+        hours,
+        minutes,
+        seconds
+      );
 
-                ul.classList.remove("play");
-                void ul.offsetWidth;
-                ul.classList.add("play");
+      // If this month's occurrence has passed, move to next month
+      if (next <= now) {
+        next.setMonth(next.getMonth() + 1);
+      }
 
-                ul.setAttribute("data-value", newDigit);
-            });
-        };
+      // Handle months with fewer days (e.g., targeting 31st in a 30-day month)
+      // JavaScript Date automatically rolls over, so we need to check and adjust
+      const originalMonth = next.getMonth();
+      next = new Date(
+        next.getFullYear(),
+        next.getMonth(),
+        targetDay,
+        hours,
+        minutes,
+        seconds
+      );
+      if (next.getMonth() !== originalMonth) {
+        // Rolled over to next month, use last day of intended month
+        next = new Date(
+          next.getFullYear(),
+          originalMonth + 1,
+          0,
+          hours,
+          minutes,
+          seconds
+        );
+      }
 
-        if (segments.showDays && flipGroups[groupIndex]) {
-            updateFlipGroup(flipGroups[groupIndex], timeRemaining.days, 3);
-            groupIndex++;
-        }
-        if (segments.showHours && flipGroups[groupIndex]) {
-            updateFlipGroup(flipGroups[groupIndex], timeRemaining.hours, 2);
-            groupIndex++;
-        }
-        if (segments.showMinutes && flipGroups[groupIndex]) {
-            updateFlipGroup(flipGroups[groupIndex], timeRemaining.minutes, 2);
-            groupIndex++;
-        }
-        if (segments.showSeconds && flipGroups[groupIndex]) {
-            updateFlipGroup(flipGroups[groupIndex], timeRemaining.seconds, 2);
-            groupIndex++;
-        }
-    },
+      return next;
+    }
 
-    // Calculate time remaining
-    getTimeRemaining: function (eventDate) {
-        const now = new Date(Date.now());
-        const total = eventDate - now;
+    if (event.recurrence === "yearly") {
+      const targetMonth = event.targetMonth - 1; // Convert 1-12 to 0-11
+      const targetDay = event.targetDay;
+      let next = new Date(
+        now.getFullYear(),
+        targetMonth,
+        targetDay,
+        hours,
+        minutes,
+        seconds
+      );
 
-        if (total <= 0) {
-            return { total: 0, days: 0, hours: 0, minutes: 0, seconds: 0, arrived: true };
-        }
+      // If this year's occurrence has passed, move to next year
+      if (next <= now) {
+        next.setFullYear(next.getFullYear() + 1);
+      }
 
-        const seconds = Math.floor((total / 1000) % 60);
-        const minutes = Math.floor((total / 1000 / 60) % 60);
-        const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
-        const days = Math.floor(total / (1000 * 60 * 60 * 24));
+      // Handle Feb 29 in non-leap years
+      if (next.getMonth() !== targetMonth) {
+        next = new Date(
+          next.getFullYear(),
+          targetMonth + 1,
+          0,
+          hours,
+          minutes,
+          seconds
+        );
+      }
 
-        return { total, days, hours, minutes, seconds, arrived: false };
-    },
+      return next;
+    }
 
-    // Build DOM element for a single event
-    buildEventElement: function (event, index) {
-        const eventWrapper = document.createElement("div");
-        eventWrapper.className = "event-wrapper";
-        eventWrapper.setAttribute("data-event-index", index);
+    return null;
+  },
 
+  // Calculate the previous (most recent past) occurrence for a recurring event
+  getPreviousOccurrence: function (event) {
+    const now = this.getCurrentTime();
+    const timeParts = (event.time || "00:00").split(":");
+    const hours = parseInt(timeParts[0]) || 0;
+    const minutes = parseInt(timeParts[1]) || 0;
+    const seconds = parseInt(timeParts[2]) || 0;
+
+    if (event.recurrence === "weekly") {
+      const targetDay = event.targetDay; // 0-6 (Sun-Sat)
+      let prev = new Date(now);
+      prev.setHours(hours, minutes, seconds, 0);
+
+      // Calculate days since target day
+      let daysSince = now.getDay() - targetDay;
+      if (daysSince < 0 || (daysSince === 0 && prev > now)) {
+        daysSince += 7;
+      }
+
+      prev.setDate(prev.getDate() - daysSince);
+      return prev;
+    }
+
+    if (event.recurrence === "monthly") {
+      const targetDay = event.targetDay; // 1-31
+      let prev = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        targetDay,
+        hours,
+        minutes,
+        seconds
+      );
+
+      // If this month's occurrence hasn't happened yet, go to previous month
+      if (prev > now) {
+        prev.setMonth(prev.getMonth() - 1);
+      }
+
+      // Handle months with fewer days
+      const intendedMonth = prev.getMonth();
+      prev = new Date(
+        prev.getFullYear(),
+        prev.getMonth(),
+        targetDay,
+        hours,
+        minutes,
+        seconds
+      );
+      if (prev.getMonth() !== intendedMonth) {
+        // Target day doesn't exist in this month, use last day
+        prev = new Date(
+          prev.getFullYear(),
+          intendedMonth + 1,
+          0,
+          hours,
+          minutes,
+          seconds
+        );
+      }
+
+      return prev;
+    }
+
+    if (event.recurrence === "yearly") {
+      const targetMonth = event.targetMonth - 1; // Convert 1-12 to 0-11
+      const targetDay = event.targetDay;
+      let prev = new Date(
+        now.getFullYear(),
+        targetMonth,
+        targetDay,
+        hours,
+        minutes,
+        seconds
+      );
+
+      // If this year's occurrence hasn't happened yet, go to previous year
+      if (prev > now) {
+        prev.setFullYear(prev.getFullYear() - 1);
+      }
+
+      // Handle Feb 29 in non-leap years
+      if (prev.getMonth() !== targetMonth) {
+        prev = new Date(
+          prev.getFullYear(),
+          targetMonth + 1,
+          0,
+          hours,
+          minutes,
+          seconds
+        );
+      }
+
+      return prev;
+    }
+
+    return null;
+  },
+
+  // Check if a recurring event should be shown based on showFromDay or showDaysBefore
+  isWithinShowPeriod: function (event, targetDate) {
+    const now = this.getCurrentTime();
+
+    // Weekly recurrence with showFromDay
+    if (event.recurrence === "weekly" && event.showFromDay !== undefined) {
+      const currentDay = now.getDay();
+      const targetDay = event.targetDay;
+      const showFromDay = event.showFromDay;
+
+      if (showFromDay <= targetDay) {
+        // Simple case: showFrom=1 (Mon), target=5 (Fri)
+        // Show on days 1, 2, 3, 4, 5
+        return currentDay >= showFromDay && currentDay <= targetDay;
+      } else {
+        // Wraparound case: showFrom=5 (Fri), target=1 (Mon)
+        // Show on days 5, 6, 0, 1
+        return currentDay >= showFromDay || currentDay <= targetDay;
+      }
+    }
+
+    // Monthly or yearly recurrence with showDaysBefore
+    if (
+      (event.recurrence === "monthly" || event.recurrence === "yearly") &&
+      event.showDaysBefore !== undefined
+    ) {
+      const showFromDate = new Date(targetDate);
+      showFromDate.setDate(showFromDate.getDate() - event.showDaysBefore);
+      return now >= showFromDate;
+    }
+
+    // No show restrictions
+    return true;
+  },
+
+  // Schedule countdown update
+  scheduleUpdate: function () {
+    const self = this;
+    setInterval(function () {
+      self.updateCountdownNumbers();
+    }, this.config.updateInterval);
+  },
+
+  // Update just the countdown numbers, not the whole DOM
+  updateCountdownNumbers: function () {
+    if (this.events.length === 0) {
+      return;
+    }
+
+    const wrapper = document.getElementById(this.identifier);
+    if (!wrapper) {
+      return;
+    }
+
+    const eventWrappers = wrapper.querySelectorAll(".event-wrapper");
+
+    eventWrappers.forEach((eventWrapper, index) => {
+      if (index < this.events.length) {
+        const event = this.events[index];
         const timeRemaining = this.getTimeRemaining(event.dateObj);
-
-        // Mark if event has arrived (used to detect state change)
-        if (timeRemaining.arrived) {
-            eventWrapper.setAttribute("data-arrived", "true");
-        }
-
-        // Set CSS custom properties for colors (use event colors or defaults)
-        if (event.textColor) {
-            eventWrapper.style.setProperty("--text-color", event.textColor);
-        }
-        if (event.accentColor) {
-            eventWrapper.style.setProperty("--accent-color", event.accentColor);
-        }
-        if (event.counterTextColor) {
-            eventWrapper.style.setProperty("--counter-text-color", event.counterTextColor);
-        }
-
-        // Create content container
-        const contentContainer = document.createElement("div");
-        contentContainer.className = "content-container";
-
-        // Icon (optional)
-        if (event.icon) {
-            const iconEl = document.createElement("div");
-            iconEl.className = "event-icon";
-            iconEl.innerHTML = event.icon;
-            contentContainer.appendChild(iconEl);
-        }
-
-        // Event name
-        const nameEl = document.createElement("div");
-        nameEl.className = "event-name";
-        nameEl.innerHTML = event.name;
-        contentContainer.appendChild(nameEl);
-
-        // Show celebration animation when event arrives (if enabled)
-        if (timeRemaining.arrived) {
-            const celebrateOnDay = event.celebrateOnDay !== false; // Default true
-
-            if (celebrateOnDay) {
-                const animationContainer = document.createElement("div");
-                animationContainer.className = "animation-container";
-
-                const emojis = event.celebrationEmojis || this.config.defaultCelebrationEmojis;
-
-                animationContainer.innerHTML = this.generateCelebrationParticles(this.config.celebrationParticleCount, emojis);
-                eventWrapper.appendChild(animationContainer);
-            }
-        }
-
-        // Always show countdown (displays zeros when arrived)
-        const countdownEl = document.createElement("div");
-        countdownEl.className = "countdown-container";
-        if (timeRemaining.arrived) {
-            countdownEl.classList.add("arrived");
-        }
         const counterStyle = event.counterStyle || "flip";
-        countdownEl.innerHTML = this.buildCountdownHTML(timeRemaining, counterStyle);
-        contentContainer.appendChild(countdownEl);
 
-        eventWrapper.appendChild(contentContainer);
-
-        return eventWrapper;
-    },
-
-    // Generate DOM
-    getDom: function () {
-        const wrapper = document.createElement("div");
-        wrapper.className = "mmm-animated-countdowns stacked-mode";
-        wrapper.id = this.identifier;
-
-        // Apply color mode
-        if (!this.config.colorMode) {
-            wrapper.classList.add("grayscale-mode");
+        if (timeRemaining.arrived) {
+          const isArrivedInDom =
+            eventWrapper.getAttribute("data-arrived") === "true";
+          if (!isArrivedInDom) {
+            // Update display to show zeros (pass arrived: false to allow update)
+            const zeroTime = {
+              days: 0,
+              hours: 0,
+              minutes: 0,
+              seconds: 0,
+              arrived: false
+            };
+            this.updateEventDisplay(eventWrapper, zeroTime, counterStyle);
+            // Then mark as arrived and add celebration
+            this.markEventArrived(eventWrapper, event);
+          }
+          // Don't update display anymore once arrived
+          return;
         }
 
-        // No events to display
-        if (this.events.length === 0) {
-            wrapper.innerHTML = "<div class='no-events'>No upcoming events</div>";
-            return wrapper;
+        this.updateEventDisplay(eventWrapper, timeRemaining, counterStyle);
+      }
+    });
+
+    // Re-process events to handle expiration and recurring event resets
+    const newEvents = this.processEvents(this.config.events);
+
+    // Check if we need to rebuild DOM (event count changed or recurring event reset)
+    let needsRebuild = false;
+
+    if (newEvents.length !== this.events.length) {
+      needsRebuild = true;
+    } else {
+      // Check if any recurring event has reset (dateObj changed significantly)
+      for (let i = 0; i < newEvents.length; i++) {
+        const oldEvent = this.events[i];
+        const newEvent = newEvents[i];
+
+        // If the event date changed by more than 1 minute, it's a reset
+        if (Math.abs(newEvent.dateObj - oldEvent.dateObj) > 60000) {
+          needsRebuild = true;
+          break;
+        }
+      }
+    }
+
+    if (needsRebuild) {
+      this.events = newEvents;
+      this.updateDom(0);
+    }
+  },
+
+  // Mark an event as arrived without rebuilding DOM
+  markEventArrived: function (eventWrapper, event) {
+    // Mark as arrived
+    eventWrapper.setAttribute("data-arrived", "true");
+
+    // Add arrived class to countdown container for glow effect
+    const countdownContainer = eventWrapper.querySelector(
+      ".countdown-container"
+    );
+    if (countdownContainer) {
+      countdownContainer.classList.add("arrived");
+    }
+
+    // Add celebration animation if enabled
+    const celebrateOnDay = event.celebrateOnDay !== false;
+    if (celebrateOnDay) {
+      const animationContainer = document.createElement("div");
+      animationContainer.className = "animation-container";
+      const emojis =
+        event.celebrationEmojis || this.config.defaultCelebrationEmojis;
+      animationContainer.innerHTML = this.generateCelebrationParticles(
+        this.config.celebrationParticleCount,
+        emojis
+      );
+      // Insert at beginning so it's behind content
+      eventWrapper.insertBefore(animationContainer, eventWrapper.firstChild);
+    }
+  },
+
+  // Update a single event's display
+  updateEventDisplay: function (container, timeRemaining, counterStyle) {
+    if (timeRemaining.arrived) {
+      return;
+    } // Don't update countdown if event has arrived
+
+    if (counterStyle === "rings") {
+      this.updateRingsDisplay(container, timeRemaining);
+    } else if (counterStyle === "flip") {
+      this.updateFlipDisplay(container, timeRemaining);
+    } else if (counterStyle === "hourglass") {
+      this.updateHourglassDisplay(container, timeRemaining);
+    } else {
+      this.updateDigitalDisplay(container, timeRemaining);
+    }
+  },
+
+  // Update digital countdown display
+  updateDigitalDisplay: function (wrapper, timeRemaining) {
+    const segments = this.getVisibleSegments(timeRemaining);
+    const timeUnits = wrapper.querySelectorAll(".countdown-digital .time-unit");
+    let unitIndex = 0;
+
+    if (segments.showDays && timeUnits[unitIndex]) {
+      const valueEl = timeUnits[unitIndex].querySelector(".time-value");
+      const labelEl = timeUnits[unitIndex].querySelector(".time-label");
+      if (valueEl) {
+        valueEl.textContent = timeRemaining.days;
+      }
+      if (labelEl) {
+        labelEl.textContent = timeRemaining.days === 1 ? "day" : "days";
+      }
+      unitIndex++;
+    }
+    if (segments.showHours && timeUnits[unitIndex]) {
+      const valueEl = timeUnits[unitIndex].querySelector(".time-value");
+      const labelEl = timeUnits[unitIndex].querySelector(".time-label");
+      if (valueEl) {
+        valueEl.textContent = timeRemaining.hours;
+      }
+      if (labelEl) {
+        labelEl.textContent = timeRemaining.hours === 1 ? "hour" : "hours";
+      }
+      unitIndex++;
+    }
+    if (segments.showMinutes && timeUnits[unitIndex]) {
+      const valueEl = timeUnits[unitIndex].querySelector(".time-value");
+      const labelEl = timeUnits[unitIndex].querySelector(".time-label");
+      if (valueEl) {
+        valueEl.textContent = timeRemaining.minutes;
+      }
+      if (labelEl) {
+        labelEl.textContent = timeRemaining.minutes === 1 ? "min" : "mins";
+      }
+      unitIndex++;
+    }
+    if (segments.showSeconds && timeUnits[unitIndex]) {
+      const valueEl = timeUnits[unitIndex].querySelector(".time-value");
+      const labelEl = timeUnits[unitIndex].querySelector(".time-label");
+      if (valueEl) {
+        valueEl.textContent = timeRemaining.seconds;
+      }
+      if (labelEl) {
+        labelEl.textContent = timeRemaining.seconds === 1 ? "sec" : "secs";
+      }
+      unitIndex++;
+    }
+  },
+
+  // Update rings countdown display
+  updateRingsDisplay: function (wrapper, timeRemaining) {
+    const segments = this.getVisibleSegments(timeRemaining);
+    const rings = wrapper.querySelectorAll(".countdown-rings .ring-container");
+    let ringIndex = 0;
+    const circumference = 2 * Math.PI * 45;
+
+    if (segments.showDays && rings[ringIndex]) {
+      const dayPercent = Math.min((timeRemaining.days / 365) * 100, 100);
+      const offset = circumference - (dayPercent / 100) * circumference;
+      const progress = rings[ringIndex].querySelector(".ring-progress");
+      const valueEl = rings[ringIndex].querySelector(".ring-value");
+      if (progress) {
+        progress.style.strokeDashoffset = offset;
+      }
+      if (valueEl) {
+        valueEl.textContent = timeRemaining.days;
+      }
+      ringIndex++;
+    }
+    if (segments.showHours && rings[ringIndex]) {
+      const hourPercent = (timeRemaining.hours / 24) * 100;
+      const offset = circumference - (hourPercent / 100) * circumference;
+      const progress = rings[ringIndex].querySelector(".ring-progress");
+      const valueEl = rings[ringIndex].querySelector(".ring-value");
+      if (progress) {
+        progress.style.strokeDashoffset = offset;
+      }
+      if (valueEl) {
+        valueEl.textContent = timeRemaining.hours;
+      }
+      ringIndex++;
+    }
+    if (segments.showMinutes && rings[ringIndex]) {
+      const minPercent = (timeRemaining.minutes / 60) * 100;
+      const offset = circumference - (minPercent / 100) * circumference;
+      const progress = rings[ringIndex].querySelector(".ring-progress");
+      const valueEl = rings[ringIndex].querySelector(".ring-value");
+      if (progress) {
+        progress.style.strokeDashoffset = offset;
+      }
+      if (valueEl) {
+        valueEl.textContent = timeRemaining.minutes;
+      }
+      ringIndex++;
+    }
+    if (segments.showSeconds && rings[ringIndex]) {
+      const secPercent = (timeRemaining.seconds / 60) * 100;
+      const offset = circumference - (secPercent / 100) * circumference;
+      const progress = rings[ringIndex].querySelector(".ring-progress");
+      const valueEl = rings[ringIndex].querySelector(".ring-value");
+      if (progress) {
+        progress.style.strokeDashoffset = offset;
+      }
+      if (valueEl) {
+        valueEl.textContent = timeRemaining.seconds;
+      }
+      ringIndex++;
+    }
+  },
+
+  // Update hourglass countdown display
+  updateHourglassDisplay: function (wrapper, timeRemaining) {
+    const hourglasses = wrapper.querySelectorAll(
+      ".countdown-hourglass .hourglass-container"
+    );
+    let hgIndex = 0;
+
+    const updateHourglass = (container, percent, value, maxValue) => {
+      if (!container) {
+        return;
+      }
+
+      const topFill = percent;
+      const bottomFill = 100 - percent;
+
+      const topSandMaxHeight = 34;
+      const topSandHeight = (topFill / 100) * topSandMaxHeight;
+      const topSandY = 50 - topSandHeight;
+
+      const bottomSandMaxHeight = 34;
+      const bottomSandHeight = (bottomFill / 100) * bottomSandMaxHeight;
+      const bottomSandY = 84 - bottomSandHeight;
+
+      const topSand = container.querySelector(".hourglass-sand-top");
+      const bottomSand = container.querySelector(".hourglass-sand-bottom");
+      const valueEl = container.querySelector(".hourglass-value");
+      const stream = container.querySelector(".hourglass-stream");
+      const flipper = container.querySelector(".hourglass-flipper");
+
+      const lastValue = parseInt(
+        container.getAttribute("data-last-value") || "0"
+      );
+      const needsFlip = value > lastValue + maxValue / 2;
+
+      container.setAttribute("data-last-value", value);
+
+      if (needsFlip && flipper) {
+        container.setAttribute("data-flipping", "true");
+
+        flipper.classList.remove("flip-animation");
+        void flipper.offsetWidth;
+        flipper.classList.add("flip-animation");
+
+        if (valueEl) {
+          valueEl.textContent = value;
         }
 
-        // Show all events stacked
-        for (let i = 0; i < this.events.length; i++) {
-            const eventEl = this.buildEventElement(this.events[i], i);
-            wrapper.appendChild(eventEl);
+        setTimeout(function () {
+          flipper.classList.remove("flip-animation");
+
+          if (topSand) {
+            topSand.style.transition = "none";
+          }
+          if (bottomSand) {
+            bottomSand.style.transition = "none";
+          }
+
+          if (topSand) {
+            topSand.setAttribute("y", 50 - topSandMaxHeight);
+            topSand.setAttribute("height", topSandMaxHeight);
+          }
+          if (bottomSand) {
+            bottomSand.setAttribute("y", 84);
+            bottomSand.setAttribute("height", 0);
+          }
+          if (stream) {
+            stream.style.opacity = "1";
+            stream.setAttribute("y2", 82);
+          }
+
+          void (topSand && topSand.getBBox());
+          if (topSand) {
+            topSand.style.transition = "";
+          }
+          if (bottomSand) {
+            bottomSand.style.transition = "";
+          }
+
+          setTimeout(function () {
+            container.setAttribute("data-flipping", "false");
+          }, 100);
+        }, 500);
+
+        return;
+      }
+
+      if (container.getAttribute("data-flipping") === "true") {
+        return;
+      }
+
+      if (topSand) {
+        topSand.setAttribute("y", topSandY);
+        topSand.setAttribute("height", topSandHeight);
+      }
+      if (bottomSand) {
+        bottomSand.setAttribute("y", bottomSandY);
+        bottomSand.setAttribute("height", bottomSandHeight);
+      }
+      if (valueEl) {
+        valueEl.textContent = value;
+      }
+      if (stream) {
+        stream.setAttribute("y2", Math.min(Math.max(52, bottomSandY), 82));
+        stream.style.opacity = topFill > 2 ? "1" : "0";
+      }
+    };
+
+    const segments = this.getVisibleSegments(timeRemaining);
+
+    if (segments.showDays && hourglasses[hgIndex]) {
+      const dayPercent = Math.min((timeRemaining.days / 365) * 100, 100);
+      updateHourglass(
+        hourglasses[hgIndex],
+        dayPercent,
+        timeRemaining.days,
+        365
+      );
+      hgIndex++;
+    }
+    if (segments.showHours && hourglasses[hgIndex]) {
+      const hourPercent = (timeRemaining.hours / 24) * 100;
+      updateHourglass(
+        hourglasses[hgIndex],
+        hourPercent,
+        timeRemaining.hours,
+        24
+      );
+      hgIndex++;
+    }
+    if (segments.showMinutes && hourglasses[hgIndex]) {
+      const minPercent = (timeRemaining.minutes / 60) * 100;
+      updateHourglass(
+        hourglasses[hgIndex],
+        minPercent,
+        timeRemaining.minutes,
+        60
+      );
+      hgIndex++;
+    }
+    if (segments.showSeconds && hourglasses[hgIndex]) {
+      const secPercent = (timeRemaining.seconds / 60) * 100;
+      updateHourglass(
+        hourglasses[hgIndex],
+        secPercent,
+        timeRemaining.seconds,
+        60
+      );
+      hgIndex++;
+    }
+  },
+
+  // Update flip countdown display
+  updateFlipDisplay: function (wrapper, timeRemaining) {
+    const segments = this.getVisibleSegments(timeRemaining);
+    const flipGroups = wrapper.querySelectorAll(".countdown-flip .flip-group");
+    let groupIndex = 0;
+
+    const updateFlipGroup = (group, newValue, numDigits) => {
+      if (!group) {
+        return;
+      }
+      const padded = String(newValue).padStart(numDigits, "0");
+      const digitUls = group.querySelectorAll(".flip-digit-ul");
+
+      digitUls.forEach((ul, i) => {
+        const newDigit = padded[i];
+        const currentDigit = ul.getAttribute("data-value");
+
+        if (currentDigit === newDigit) {
+          return;
         }
 
-        return wrapper;
-    },
+        const activeLi = ul.querySelector(".flip-clock-active");
+        const beforeLi = ul.querySelector(".flip-clock-before");
 
-    // Build countdown HTML
-    buildCountdownHTML: function (time, counterStyle) {
-        let html = "";
+        activeLi
+          .querySelectorAll(".inn")
+          .forEach((inn) => (inn.textContent = newDigit));
+        beforeLi
+          .querySelectorAll(".inn")
+          .forEach((inn) => (inn.textContent = currentDigit));
 
-        if (counterStyle === "rings") {
-            html += this.buildRingsCountdown(time);
-        } else if (counterStyle === "flip") {
-            html += this.buildFlipCountdown(time);
-        } else if (counterStyle === "hourglass") {
-            html += this.buildHourglassCountdown(time);
-        } else {
-            html += this.buildDigitalCountdown(time);
-        }
+        ul.classList.remove("play");
+        void ul.offsetWidth;
+        ul.classList.add("play");
 
-        return html;
-    },
+        ul.setAttribute("data-value", newDigit);
+      });
+    };
 
-    // Calculate which segments should be shown (always show all four)
-    getVisibleSegments: function (_time) {
-        return { showDays: true, showHours: true, showMinutes: true, showSeconds: true };
-    },
+    if (segments.showDays && flipGroups[groupIndex]) {
+      updateFlipGroup(flipGroups[groupIndex], timeRemaining.days, 3);
+      groupIndex++;
+    }
+    if (segments.showHours && flipGroups[groupIndex]) {
+      updateFlipGroup(flipGroups[groupIndex], timeRemaining.hours, 2);
+      groupIndex++;
+    }
+    if (segments.showMinutes && flipGroups[groupIndex]) {
+      updateFlipGroup(flipGroups[groupIndex], timeRemaining.minutes, 2);
+      groupIndex++;
+    }
+    if (segments.showSeconds && flipGroups[groupIndex]) {
+      updateFlipGroup(flipGroups[groupIndex], timeRemaining.seconds, 2);
+      groupIndex++;
+    }
+  },
 
-    // Build digital countdown display
-    buildDigitalCountdown: function (time) {
-        const segments = this.getVisibleSegments(time);
-        let html = '<div class="countdown-units countdown-digital">';
+  // Calculate time remaining
+  getTimeRemaining: function (eventDate) {
+    const now = this.getCurrentTime();
+    const total = eventDate - now;
 
-        if (segments.showDays) {
-            html += this.buildTimeUnit(time.days, "day", "days");
-        }
-        if (segments.showHours) {
-            html += this.buildTimeUnit(time.hours, "hour", "hours");
-        }
-        if (segments.showMinutes) {
-            html += this.buildTimeUnit(time.minutes, "min", "mins");
-        }
-        if (segments.showSeconds) {
-            html += this.buildTimeUnit(time.seconds, "sec", "secs");
-        }
+    if (total <= 0) {
+      return {
+        total: 0,
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        arrived: true
+      };
+    }
 
-        html += "</div>";
-        return html;
-    },
+    const seconds = Math.floor((total / 1000) % 60);
+    const minutes = Math.floor((total / 1000 / 60) % 60);
+    const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(total / (1000 * 60 * 60 * 24));
 
-    // Build flip clock countdown display
-    buildFlipCountdown: function (time) {
-        const segments = this.getVisibleSegments(time);
-        let html = '<div class="countdown-flip">';
+    return { total, days, hours, minutes, seconds, arrived: false };
+  },
 
-        if (segments.showDays) {
-            html += this.buildFlipGroup(time.days, "days", 3);
-        }
-        if (segments.showHours) {
-            html += this.buildFlipGroup(time.hours, "hours", 2);
-        }
-        if (segments.showMinutes) {
-            html += this.buildFlipGroup(time.minutes, "mins", 2);
-        }
-        if (segments.showSeconds) {
-            html += this.buildFlipGroup(time.seconds, "secs", 2);
-        }
+  // Build DOM element for a single event
+  buildEventElement: function (event, index) {
+    const eventWrapper = document.createElement("div");
+    eventWrapper.className = "event-wrapper";
+    eventWrapper.setAttribute("data-event-index", index);
 
-        html += "</div>";
-        return html;
-    },
+    const timeRemaining = this.getTimeRemaining(event.dateObj);
 
-    // Build a group of flip digits with a label
-    buildFlipGroup: function (value, label, numDigits) {
-        const padded = String(value).padStart(numDigits, "0");
+    // Mark if event has arrived (used to detect state change)
+    if (timeRemaining.arrived) {
+      eventWrapper.setAttribute("data-arrived", "true");
+    }
 
-        let html = `<div class="flip-group" data-label="${label}">`;
-        html += '<div class="flip-digits">';
+    // Set CSS custom properties for colors (use event colors or defaults)
+    if (event.textColor) {
+      eventWrapper.style.setProperty("--text-color", event.textColor);
+    }
+    if (event.accentColor) {
+      eventWrapper.style.setProperty("--accent-color", event.accentColor);
+    }
+    if (event.counterTextColor) {
+      eventWrapper.style.setProperty(
+        "--counter-text-color",
+        event.counterTextColor
+      );
+    }
+    if (event.sandColor) {
+      eventWrapper.style.setProperty("--sand-color", event.sandColor);
+    }
 
-        for (let i = 0; i < numDigits; i++) {
-            html += this.buildFlipDigit(padded[i]);
-        }
+    // Create content container
+    const contentContainer = document.createElement("div");
+    contentContainer.className = "content-container";
 
-        html += "</div>";
-        html += `<span class="flip-label">${label}</span>`;
-        html += "</div>";
+    // Icon (optional)
+    if (event.icon) {
+      const iconEl = document.createElement("div");
+      iconEl.className = "event-icon";
+      iconEl.innerHTML = event.icon;
+      contentContainer.appendChild(iconEl);
+    }
 
-        return html;
-    },
+    // Event name
+    const nameEl = document.createElement("div");
+    nameEl.className = "event-name";
+    nameEl.innerHTML = event.name;
+    contentContainer.appendChild(nameEl);
 
-    // Build individual flip digit
-    buildFlipDigit: function (digit) {
-        return `
+    // Show celebration animation when event arrives (if enabled)
+    if (timeRemaining.arrived) {
+      const celebrateOnDay = event.celebrateOnDay !== false; // Default true
+
+      if (celebrateOnDay) {
+        const animationContainer = document.createElement("div");
+        animationContainer.className = "animation-container";
+
+        const emojis =
+          event.celebrationEmojis || this.config.defaultCelebrationEmojis;
+
+        animationContainer.innerHTML = this.generateCelebrationParticles(
+          this.config.celebrationParticleCount,
+          emojis
+        );
+        eventWrapper.appendChild(animationContainer);
+      }
+    }
+
+    // Always show countdown (displays zeros when arrived)
+    const countdownEl = document.createElement("div");
+    countdownEl.className = "countdown-container";
+    if (timeRemaining.arrived) {
+      countdownEl.classList.add("arrived");
+    }
+    const counterStyle = event.counterStyle || "flip";
+    countdownEl.innerHTML = this.buildCountdownHTML(
+      timeRemaining,
+      counterStyle
+    );
+    contentContainer.appendChild(countdownEl);
+
+    eventWrapper.appendChild(contentContainer);
+
+    return eventWrapper;
+  },
+
+  // Generate DOM
+  getDom: function () {
+    const wrapper = document.createElement("div");
+    wrapper.className = "mmm-animated-countdowns stacked-mode";
+    wrapper.id = this.identifier;
+
+    // Apply color mode
+    if (!this.config.colorMode) {
+      wrapper.classList.add("grayscale-mode");
+    }
+
+    // No events to display
+    if (this.events.length === 0) {
+      wrapper.innerHTML = "<div class='no-events'>No upcoming events</div>";
+      return wrapper;
+    }
+
+    // Show all events stacked
+    for (let i = 0; i < this.events.length; i++) {
+      const eventEl = this.buildEventElement(this.events[i], i);
+      wrapper.appendChild(eventEl);
+    }
+
+    return wrapper;
+  },
+
+  // Build countdown HTML
+  buildCountdownHTML: function (time, counterStyle) {
+    let html = "";
+
+    if (counterStyle === "rings") {
+      html += this.buildRingsCountdown(time);
+    } else if (counterStyle === "flip") {
+      html += this.buildFlipCountdown(time);
+    } else if (counterStyle === "hourglass") {
+      html += this.buildHourglassCountdown(time);
+    } else {
+      html += this.buildDigitalCountdown(time);
+    }
+
+    return html;
+  },
+
+  // Calculate which segments should be shown (always show all four)
+  getVisibleSegments: function (_time) {
+    return {
+      showDays: true,
+      showHours: true,
+      showMinutes: true,
+      showSeconds: true
+    };
+  },
+
+  // Build digital countdown display
+  buildDigitalCountdown: function (time) {
+    const segments = this.getVisibleSegments(time);
+    let html = '<div class="countdown-units countdown-digital">';
+
+    if (segments.showDays) {
+      html += this.buildTimeUnit(time.days, "day", "days");
+    }
+    if (segments.showHours) {
+      html += this.buildTimeUnit(time.hours, "hour", "hours");
+    }
+    if (segments.showMinutes) {
+      html += this.buildTimeUnit(time.minutes, "min", "mins");
+    }
+    if (segments.showSeconds) {
+      html += this.buildTimeUnit(time.seconds, "sec", "secs");
+    }
+
+    html += "</div>";
+    return html;
+  },
+
+  // Build flip clock countdown display
+  buildFlipCountdown: function (time) {
+    const segments = this.getVisibleSegments(time);
+    let html = '<div class="countdown-flip">';
+
+    if (segments.showDays) {
+      html += this.buildFlipGroup(time.days, "days", 3);
+    }
+    if (segments.showHours) {
+      html += this.buildFlipGroup(time.hours, "hours", 2);
+    }
+    if (segments.showMinutes) {
+      html += this.buildFlipGroup(time.minutes, "mins", 2);
+    }
+    if (segments.showSeconds) {
+      html += this.buildFlipGroup(time.seconds, "secs", 2);
+    }
+
+    html += "</div>";
+    return html;
+  },
+
+  // Build a group of flip digits with a label
+  buildFlipGroup: function (value, label, numDigits) {
+    const padded = String(value).padStart(numDigits, "0");
+
+    let html = `<div class="flip-group" data-label="${label}">`;
+    html += '<div class="flip-digits">';
+
+    for (let i = 0; i < numDigits; i++) {
+      html += this.buildFlipDigit(padded[i]);
+    }
+
+    html += "</div>";
+    html += `<span class="flip-label">${label}</span>`;
+    html += "</div>";
+
+    return html;
+  },
+
+  // Build individual flip digit
+  buildFlipDigit: function (digit) {
+    return `
             <ul class="flip-digit-ul" data-value="${digit}">
                 <li class="flip-digit-li flip-clock-active">
                     <a href="#">
@@ -709,40 +1200,40 @@ Module.register("MMM-AnimatedCountdowns", {
                 </li>
             </ul>
         `;
-    },
+  },
 
-    // Build rings countdown display
-    buildRingsCountdown: function (time) {
-        const segments = this.getVisibleSegments(time);
-        let html = '<div class="countdown-rings">';
+  // Build rings countdown display
+  buildRingsCountdown: function (time) {
+    const segments = this.getVisibleSegments(time);
+    let html = '<div class="countdown-rings">';
 
-        if (segments.showDays) {
-            const dayPercent = Math.min((time.days / 365) * 100, 100);
-            html += this.buildRing(time.days, "days", dayPercent);
-        }
-        if (segments.showHours) {
-            const hourPercent = (time.hours / 24) * 100;
-            html += this.buildRing(time.hours, "hrs", hourPercent);
-        }
-        if (segments.showMinutes) {
-            const minPercent = (time.minutes / 60) * 100;
-            html += this.buildRing(time.minutes, "min", minPercent);
-        }
-        if (segments.showSeconds) {
-            const secPercent = (time.seconds / 60) * 100;
-            html += this.buildRing(time.seconds, "sec", secPercent);
-        }
+    if (segments.showDays) {
+      const dayPercent = Math.min((time.days / 365) * 100, 100);
+      html += this.buildRing(time.days, "days", dayPercent);
+    }
+    if (segments.showHours) {
+      const hourPercent = (time.hours / 24) * 100;
+      html += this.buildRing(time.hours, "hrs", hourPercent);
+    }
+    if (segments.showMinutes) {
+      const minPercent = (time.minutes / 60) * 100;
+      html += this.buildRing(time.minutes, "min", minPercent);
+    }
+    if (segments.showSeconds) {
+      const secPercent = (time.seconds / 60) * 100;
+      html += this.buildRing(time.seconds, "sec", secPercent);
+    }
 
-        html += "</div>";
-        return html;
-    },
+    html += "</div>";
+    return html;
+  },
 
-    // Build individual ring
-    buildRing: function (value, label, percent) {
-        const circumference = 2 * Math.PI * 45;
-        const offset = circumference - (percent / 100) * circumference;
+  // Build individual ring
+  buildRing: function (value, label, percent) {
+    const circumference = 2 * Math.PI * 45;
+    const offset = circumference - (percent / 100) * circumference;
 
-        return `
+    return `
             <div class="ring-container">
                 <svg class="ring-svg" viewBox="0 0 100 100">
                     <circle class="ring-bg" cx="50" cy="50" r="45" />
@@ -757,48 +1248,48 @@ Module.register("MMM-AnimatedCountdowns", {
                 </div>
             </div>
         `;
-    },
+  },
 
-    // Build hourglass countdown display
-    buildHourglassCountdown: function (time) {
-        const segments = this.getVisibleSegments(time);
-        let html = '<div class="countdown-hourglass">';
+  // Build hourglass countdown display
+  buildHourglassCountdown: function (time) {
+    const segments = this.getVisibleSegments(time);
+    let html = '<div class="countdown-hourglass">';
 
-        if (segments.showDays) {
-            const dayPercent = Math.min((time.days / 365) * 100, 100);
-            html += this.buildHourglass(time.days, "days", dayPercent);
-        }
-        if (segments.showHours) {
-            const hourPercent = (time.hours / 24) * 100;
-            html += this.buildHourglass(time.hours, "hrs", hourPercent);
-        }
-        if (segments.showMinutes) {
-            const minPercent = (time.minutes / 60) * 100;
-            html += this.buildHourglass(time.minutes, "min", minPercent);
-        }
-        if (segments.showSeconds) {
-            const secPercent = (time.seconds / 60) * 100;
-            html += this.buildHourglass(time.seconds, "sec", secPercent);
-        }
+    if (segments.showDays) {
+      const dayPercent = Math.min((time.days / 365) * 100, 100);
+      html += this.buildHourglass(time.days, "days", dayPercent);
+    }
+    if (segments.showHours) {
+      const hourPercent = (time.hours / 24) * 100;
+      html += this.buildHourglass(time.hours, "hrs", hourPercent);
+    }
+    if (segments.showMinutes) {
+      const minPercent = (time.minutes / 60) * 100;
+      html += this.buildHourglass(time.minutes, "min", minPercent);
+    }
+    if (segments.showSeconds) {
+      const secPercent = (time.seconds / 60) * 100;
+      html += this.buildHourglass(time.seconds, "sec", secPercent);
+    }
 
-        html += "</div>";
-        return html;
-    },
+    html += "</div>";
+    return html;
+  },
 
-    // Build individual hourglass
-    buildHourglass: function (value, label, percent) {
-        const topFill = percent;
-        const bottomFill = 100 - percent;
+  // Build individual hourglass
+  buildHourglass: function (value, label, percent) {
+    const topFill = percent;
+    const bottomFill = 100 - percent;
 
-        const topSandMaxHeight = 34;
-        const topSandHeight = (topFill / 100) * topSandMaxHeight;
-        const topSandY = 50 - topSandHeight;
+    const topSandMaxHeight = 34;
+    const topSandHeight = (topFill / 100) * topSandMaxHeight;
+    const topSandY = 50 - topSandHeight;
 
-        const bottomSandMaxHeight = 34;
-        const bottomSandHeight = (bottomFill / 100) * bottomSandMaxHeight;
-        const bottomSandY = 84 - bottomSandHeight;
+    const bottomSandMaxHeight = 34;
+    const bottomSandHeight = (bottomFill / 100) * bottomSandMaxHeight;
+    const bottomSandY = 84 - bottomSandHeight;
 
-        return `
+    return `
             <div class="hourglass-container" data-label="${label}" data-last-value="${value}">
                 <div class="hourglass-flipper">
                     <svg class="hourglass-svg" viewBox="0 0 100 100">
@@ -852,39 +1343,38 @@ Module.register("MMM-AnimatedCountdowns", {
                 </div>
             </div>
         `;
-    },
+  },
 
-    // Build individual time unit
-    buildTimeUnit: function (value, singular, plural) {
-        const label = value === 1 ? singular : plural;
-        return `
+  // Build individual time unit
+  buildTimeUnit: function (value, singular, plural) {
+    const label = value === 1 ? singular : plural;
+    return `
             <div class="time-unit">
                 <span class="time-value">${value}</span>
                 <span class="time-label">${label}</span>
             </div>
         `;
-    },
+  },
 
-    // Generate celebration particle HTML (snow-style falling animation)
-    generateCelebrationParticles: function (count, emojis) {
-        let html = "";
+  // Generate celebration particle HTML (snow-style falling animation)
+  generateCelebrationParticles: function (count, emojis) {
+    let html = "";
 
-        for (let i = 0; i < count; i++) {
-            const delay = Math.random() * 5;
-            const duration = 3 + Math.random() * 4;
-            const left = Math.random() * 100;
-            const size = 0.5 + Math.random() * 1;
-            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+    for (let i = 0; i < count; i++) {
+      const delay = Math.random() * 5;
+      const duration = 3 + Math.random() * 4;
+      const left = Math.random() * 100;
+      const size = 0.5 + Math.random() * 1;
+      const emoji = emojis[Math.floor(Math.random() * emojis.length)];
 
-            html += `<div class="particle celebration-particle" style="
+      html += `<div class="particle celebration-particle" style="
                 left: ${left}%;
                 animation-delay: ${delay}s;
                 animation-duration: ${duration}s;
                 --particle-size: ${size};
             ">${emoji}</div>`;
-        }
-
-        return html;
     }
 
+    return html;
+  }
 });
