@@ -6,32 +6,36 @@
    ============================================ */
 
 .mmm-animated-countdowns {
-    --text-color: #ffd700;
-    --accent-color: #ffd700;
-    --counter-text-color: #ffffff;
-    --sand-color: #E2CA76;
+  --text-color: #ffd700;
+  --accent-color: #ffd700;
+  --counter-text-color: #ffffff;
+  --sand-color: #e2ca76;
 
-    position: relative;
-    text-align: center;
-    overflow: visible;
-    padding: 10px 0;
-    min-width: 350px;
-    container-type: inline-size;
-    container-name: countdown-module;
+  position: relative;
+  text-align: center;
+  overflow: visible;
+  padding: 10px 0;
+  width: 100%;
+  box-sizing: border-box;
+  container-type: inline-size;
+  container-name: countdown-module;
 }
 
 /* Stacked mode - show all events vertically */
 .mmm-animated-countdowns.stacked-mode {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
 }
 
 /* Event wrapper - contains a single event */
 .event-wrapper {
-    position: relative;
-    border-radius: 10px;
-    padding: 10px 0;
+  position: relative;
+  border-radius: 10px;
+  padding: 10px 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* ============================================
@@ -39,123 +43,158 @@
    ============================================ */
 
 .mmm-animated-countdowns.grayscale-mode {
-    filter: grayscale(1) invert(1);
+  filter: grayscale(1) invert(1);
 
-    /* Override colors with neutral grays that work well inverted */
-    --text-color: #333;
-    --accent-color: #333;
-    --counter-text-color: #111;
-    --sand-color: #666;
+  /* Override colors with neutral grays that work well inverted */
+  --text-color: #333;
+  --accent-color: #333;
+  --counter-text-color: #111;
+  --sand-color: #666;
 }
 
 /* Particles - reduce opacity slightly for cleaner look */
 .mmm-animated-countdowns.grayscale-mode .particle {
-    filter: opacity(0.3);
+  filter: opacity(0.3);
 }
 
 /* Event icon - make it dark (will appear light after invert) */
 .mmm-animated-countdowns.grayscale-mode .event-icon {
-    filter: brightness(0.3);
+  filter: brightness(0.3);
 }
 
 /* Event name - dark color for good contrast after invert */
 .mmm-animated-countdowns.grayscale-mode .event-name {
-    color: #222;
-    text-shadow: none;
+  color: #222;
+  text-shadow: none;
 }
 
 /* ---- DIGITAL COUNTER ---- */
 .mmm-animated-countdowns.grayscale-mode .time-unit {
-    background: rgba(200, 200, 200, 0.3);
-    border: 1px solid rgba(150, 150, 150, 0.3);
+  background: rgba(200, 200, 200, 0.3);
+  border: 1px solid rgba(150, 150, 150, 0.3);
 }
 
 .mmm-animated-countdowns.grayscale-mode .time-value {
-    color: #111;
-    text-shadow: none;
+  color: #111;
+  text-shadow: none;
 }
 
 .mmm-animated-countdowns.grayscale-mode .time-label {
-    color: #333;
+  color: #333;
 }
 
 /* ---- FLIP COUNTER ---- */
 .mmm-animated-countdowns.grayscale-mode .flip-digit-ul {
-    background: #ccc;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  background: #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .mmm-animated-countdowns.grayscale-mode .flip-digit-li a div .inn {
-    color: #111;
-    text-shadow: none;
-    background-color: #ccc;
+  color: #111;
+  text-shadow: none;
+  background-color: #ccc;
 }
 
 .mmm-animated-countdowns.grayscale-mode .flip-digit-li a div.up .inn {
-    background: linear-gradient(to bottom, #ddd 0%, #ccc 100%);
+  background: linear-gradient(to bottom, #ddd 0%, #ccc 100%);
 }
 
 .mmm-animated-countdowns.grayscale-mode .flip-digit-li a div.down .inn {
-    background: linear-gradient(to bottom, #ccc 0%, #bbb 100%);
+  background: linear-gradient(to bottom, #ccc 0%, #bbb 100%);
 }
 
 .mmm-animated-countdowns.grayscale-mode .flip-label {
-    color: #333;
+  color: #333;
 }
 
 /* ---- RINGS COUNTER ---- */
 .mmm-animated-countdowns.grayscale-mode .ring-bg {
-    stroke: rgba(100, 100, 100, 0.3);
+  stroke: rgba(100, 100, 100, 0.3);
 }
 
 .mmm-animated-countdowns.grayscale-mode .ring-progress {
-    stroke: #333;
-    filter: none;
+  stroke: #333;
+  filter: none;
 }
 
 .mmm-animated-countdowns.grayscale-mode .ring-value {
-    color: #111;
-    text-shadow: none;
+  color: #111;
+  text-shadow: none;
 }
 
 .mmm-animated-countdowns.grayscale-mode .ring-label {
-    color: #333;
+  color: #333;
 }
 
 /* ---- HOURGLASS COUNTER ---- */
 .mmm-animated-countdowns.grayscale-mode .hourglass-glass-body {
-    fill: rgba(180, 180, 180, 0.4);
-    stroke: rgba(120, 120, 120, 0.6);
+  fill: rgba(180, 180, 180, 0.4);
+  stroke: rgba(120, 120, 120, 0.6);
 }
 
 .mmm-animated-countdowns.grayscale-mode .hourglass-glass-inner {
-    fill: rgba(200, 200, 200, 0.3);
+  fill: rgba(200, 200, 200, 0.3);
 }
 
 .mmm-animated-countdowns.grayscale-mode .hourglass-cap,
 .mmm-animated-countdowns.grayscale-mode .hourglass-cap-highlight,
 .mmm-animated-countdowns.grayscale-mode .hourglass-cap-shadow {
-    fill: #666;
-    stroke: #555;
+  fill: #666;
+  stroke: #555;
 }
 
 .mmm-animated-countdowns.grayscale-mode .hourglass-sand {
-    fill: #333;
-    filter: none;
+  fill: #333;
+  filter: none;
 }
 
 .mmm-animated-countdowns.grayscale-mode .hourglass-stream {
-    stroke: #333;
-    filter: none;
+  stroke: #333;
+  filter: none;
 }
 
 .mmm-animated-countdowns.grayscale-mode .hourglass-value {
-    color: #111;
-    text-shadow: none;
+  color: #111;
+  text-shadow: none;
 }
 
 .mmm-animated-countdowns.grayscale-mode .hourglass-label {
-    color: #333;
+  color: #333;
+}
+
+/* ============================================
+   POSITION-SPECIFIC MIN-WIDTHS
+   Order matters: full-width first, then specific positions override
+   Note: Using > .container to avoid matching nested regions
+   ============================================ */
+
+/* Full-width positions - min-width 400px */
+.region.fullscreen.above > .container .mmm-animated-countdowns,
+.region.fullscreen.below > .container .mmm-animated-countdowns,
+.region.top.bar > .container .mmm-animated-countdowns,
+.region.bottom.bar > .container .mmm-animated-countdowns,
+.region.upper.third > .container .mmm-animated-countdowns,
+.region.middle.center > .container .mmm-animated-countdowns,
+.region.lower.third > .container .mmm-animated-countdowns {
+  min-width: 400px;
+}
+
+/* Center column positions - min-width 300px */
+.region.top.center > .container .mmm-animated-countdowns,
+.region.bottom.center > .container .mmm-animated-countdowns {
+  min-width: 300px;
+}
+
+/* Left positions - min-width 322px */
+.region.top.left > .container .mmm-animated-countdowns,
+.region.bottom.left > .container .mmm-animated-countdowns {
+  min-width: 322px;
+}
+
+/* Right positions - min-width 267px */
+.region.top.right > .container .mmm-animated-countdowns,
+.region.bottom.right > .container .mmm-animated-countdowns {
+  min-width: 267px;
 }
 
 /* ============================================
@@ -163,40 +202,45 @@
    ============================================ */
 
 .content-container {
-    position: relative;
-    z-index: 10;
-    padding: 5px 0;
-    width: 100%;
-    box-sizing: border-box;
+  position: relative;
+  z-index: 10;
+  padding: 5px 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Event icon */
 .event-icon {
-    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Android Emoji', 'EmojiSymbols', sans-serif;
-    font-size: 2.5em;
-    margin-bottom: 5px;
-    animation: bounce 2s ease-in-out infinite;
+  font-family:
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji",
+    "EmojiSymbols", sans-serif;
+  font-size: 2.5em;
+  margin-bottom: 5px;
+  animation: bounce 2s ease-in-out infinite;
 }
 
 /* Event name */
 .event-name {
-    font-size: 1.6em;
-    font-weight: 300;
-    color: var(--text-color);
-    text-shadow: 0 0 20px var(--text-color);
-    margin-bottom: 10px;
-    letter-spacing: 2px;
-    max-width: 300px;
-    margin-left: auto;
-    margin-right: auto;
-    word-wrap: break-word;
+  font-size: 1.6em;
+  font-weight: 300;
+  color: var(--text-color);
+  text-shadow: 0 0 20px var(--text-color);
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  word-wrap: break-word;
 }
 
 /* No events message */
 .no-events {
-    font-size: 1.5em;
-    color: #888;
-    padding: 40px;
+  font-size: 1.5em;
+  color: #888;
+  padding: 40px;
 }
 
 /* ============================================
@@ -204,52 +248,70 @@
    ============================================ */
 
 .countdown-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
+  align-self: stretch;
 }
 
 .countdown-units.countdown-digital {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: nowrap;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+  align-self: stretch;
 }
 
 .time-unit {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    padding: 8px 6px;
-    min-width: 68px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 8px 6px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* Days card - flexible width, but at least as wide as others */
+.time-unit:first-child {
+  flex: 0 0 auto;
+  min-width: 52px;
+}
+
+/* Hours, mins, secs - equal fixed width */
+.time-unit:not(:first-child) {
+  width: 52px;
 }
 
 .time-unit:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .time-value {
-    font-size: 1.6em;
-    font-weight: 700;
-    color: var(--counter-text-color);
-    line-height: 1;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  font-size: 1.6em;
+  font-weight: 700;
+  color: var(--counter-text-color);
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .time-label {
-    font-size: 0.5em;
-    color: var(--counter-text-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 3px;
+  font-size: 0.5em;
+  color: var(--counter-text-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 3px;
 }
 
 /* ============================================
@@ -257,64 +319,68 @@
    ============================================ */
 
 .countdown-rings {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: nowrap;
-    margin-bottom: 15px;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  margin-bottom: 15px;
+  align-self: stretch;
 }
 
 .ring-container {
-    position: relative;
-    width: 68px;
-    height: 68px;
+  position: relative;
+  flex: 0 1 auto;
+  min-width: 0;
+  width: 60px;
+  aspect-ratio: 1;
 }
 
 .ring-svg {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .ring-bg {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.1);
-    stroke-width: 6;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 6;
 }
 
 .ring-progress {
-    fill: none;
-    stroke: var(--accent-color);
-    stroke-width: 6;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.3s ease;
-    filter: drop-shadow(0 0 6px var(--accent-color));
+  fill: none;
+  stroke: var(--accent-color);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+  filter: drop-shadow(0 0 6px var(--accent-color));
 }
 
 .ring-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .ring-value {
-    font-size: 1.2em;
-    font-weight: 700;
-    color: var(--counter-text-color);
-    line-height: 1;
+  font-size: 1.2em;
+  font-weight: 700;
+  color: var(--counter-text-color);
+  line-height: 1;
 }
 
 .ring-label {
-    font-size: 0.5em;
-    color: var(--counter-text-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 2px;
+  font-size: 0.5em;
+  color: var(--counter-text-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
 }
 
 /* ============================================
@@ -322,133 +388,139 @@
    ============================================ */
 
 .countdown-hourglass {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: nowrap;
-    margin-bottom: 15px;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  margin-bottom: 15px;
+  align-self: stretch;
 }
 
 .hourglass-container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 68px;
-    perspective: 500px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  width: 60px;
+  perspective: 500px;
 }
 
 /* Flipper wrapper for rotation animation */
 .hourglass-flipper {
-    width: 100%;
-    transform-style: preserve-3d;
+  width: 100%;
+  transform-style: preserve-3d;
 }
 
 .hourglass-flipper.flip-animation {
-    animation: hourglassFlip 0.5s ease-in-out forwards;
+  animation: hourglassFlip 0.5s ease-in-out forwards;
 }
 
 @keyframes hourglassFlip {
-    0% {
-        transform: rotateX(0deg);
-    }
+  0% {
+    transform: rotateX(0deg);
+  }
 
-    100% {
-        transform: rotateX(180deg);
-    }
+  100% {
+    transform: rotateX(180deg);
+  }
 }
 
 .hourglass-svg {
-    width: 100%;
-    height: 55px;
-    display: block;
+  width: 100%;
+  height: 55px;
+  display: block;
 }
 
 /* Hourglass glass body */
 .hourglass-glass-body {
-    fill: rgba(135, 206, 235, 0.25);
-    stroke: rgba(135, 206, 235, 0.6);
-    stroke-width: 2;
+  fill: rgba(135, 206, 235, 0.25);
+  stroke: rgba(135, 206, 235, 0.6);
+  stroke-width: 2;
 }
 
 /* Hourglass glass inner (lighter fill) */
 .hourglass-glass-inner {
-    fill: rgba(135, 206, 235, 0.15);
-    stroke: none;
+  fill: rgba(135, 206, 235, 0.15);
+  stroke: none;
 }
 
 /* End caps (brownish wood color) */
 .hourglass-cap {
-    fill: #8B6914;
-    stroke: #6B4F0F;
-    stroke-width: 1;
+  fill: #8b6914;
+  stroke: #6b4f0f;
+  stroke-width: 1;
 }
 
 .hourglass-cap-highlight {
-    fill: #A67C00;
-    stroke: none;
-    opacity: 0.6;
+  fill: #a67c00;
+  stroke: none;
+  opacity: 0.6;
 }
 
 .hourglass-cap-shadow {
-    fill: #5C4A1F;
-    stroke: none;
-    opacity: 0.5;
+  fill: #5c4a1f;
+  stroke: none;
+  opacity: 0.5;
 }
 
 /* Glass shine highlight */
 .hourglass-shine {
-    fill: rgba(255, 255, 255, 0.15);
-    stroke: none;
+  fill: rgba(255, 255, 255, 0.15);
+  stroke: none;
 }
 
 /* Sand fill */
 .hourglass-sand {
-    fill: var(--sand-color);
-    transition: y 0.3s ease, height 0.3s ease;
-    filter: drop-shadow(0 0 3px var(--sand-color));
+  fill: var(--sand-color);
+  transition:
+    y 0.3s ease,
+    height 0.3s ease;
+  filter: drop-shadow(0 0 3px var(--sand-color));
 }
 
 .hourglass-sand-top {
-    opacity: 0.9;
+  opacity: 0.9;
 }
 
 .hourglass-sand-bottom {
-    opacity: 0.95;
+  opacity: 0.95;
 }
 
 /* Falling sand stream */
 .hourglass-stream {
-    stroke: var(--sand-color);
-    stroke-width: 2;
-    stroke-linecap: round;
-    opacity: 0.7;
-    filter: drop-shadow(0 0 2px var(--sand-color));
-    transition: y2 0.1s ease;
+  stroke: var(--sand-color);
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.7;
+  filter: drop-shadow(0 0 2px var(--sand-color));
+  transition: y2 0.1s ease;
 }
 
 /* Content below hourglass (number and label) */
 .hourglass-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 5px;
 }
 
 .hourglass-value {
-    font-size: 1.2em;
-    font-weight: 700;
-    color: var(--counter-text-color);
-    line-height: 1;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  font-size: 1.2em;
+  font-weight: 700;
+  color: var(--counter-text-color);
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .hourglass-label {
-    font-size: 0.5em;
-    color: var(--counter-text-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 2px;
+  font-size: 0.5em;
+  color: var(--counter-text-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
 }
 
 /* ============================================
@@ -456,239 +528,258 @@
    ============================================ */
 
 .countdown-flip {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: nowrap;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  align-self: stretch;
 }
 
 .flip-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .flip-digits {
-    display: flex;
-    gap: 1px;
+  display: flex;
+  gap: 1px;
 }
 
 /* Main digit container (ul) */
 .flip-digit-ul {
-    position: relative;
-    float: left;
-    margin: 0;
-    width: 32px;
-    height: 54px;
-    font-size: 34px;
-    font-weight: bold;
-    line-height: 54px;
-    border-radius: 4px;
-    background: #333;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
-    list-style: none;
-    padding: 0;
+  position: relative;
+  margin: 0;
+  width: 26px;
+  height: 44px;
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 44px;
+  border-radius: 4px;
+  background: #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+  list-style: none;
+  padding: 0;
 }
 
 /* List item (holds the digit) */
 .flip-digit-li {
-    z-index: 1;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    text-decoration: none !important;
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  text-decoration: none !important;
 }
 
 .flip-digit-li:first-child {
-    z-index: 2;
+  z-index: 2;
 }
 
 .flip-digit-li a {
-    display: block;
-    height: 100%;
-    perspective: 200px;
-    margin: 0 !important;
-    overflow: visible !important;
-    cursor: default !important;
+  display: block;
+  height: 100%;
+  perspective: 200px;
+  margin: 0 !important;
+  overflow: visible !important;
+  cursor: default !important;
 }
 
 /* Up and Down halves */
 .flip-digit-li a div.up,
 .flip-digit-li a div.down {
-    z-index: 1;
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    overflow: hidden;
-    outline: 1px solid transparent;
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  outline: 1px solid transparent;
 }
 
 .flip-digit-li a div.up {
-    transform-origin: 50% 100%;
-    top: 0;
-    border-radius: 4px 4px 0 0;
+  transform-origin: 50% 100%;
+  top: 0;
+  border-radius: 4px 4px 0 0;
 }
 
 .flip-digit-li a div.up:after {
-    content: "";
-    position: absolute;
-    top: 26px;
-    left: 0;
-    z-index: 5;
-    width: 100%;
-    height: 2px;
-    background-color: rgba(0, 0, 0, 0.4);
+  content: "";
+  position: absolute;
+  top: 21px;
+  left: 0;
+  z-index: 5;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .flip-digit-li a div.down {
-    transform-origin: 50% 0%;
-    bottom: 0;
-    border-radius: 0 0 4px 4px;
+  transform-origin: 50% 0%;
+  bottom: 0;
+  border-radius: 0 0 4px 4px;
 }
 
 /* Inner number display */
 .flip-digit-li a div .inn {
-    position: absolute;
-    left: 0;
-    z-index: 1;
-    width: 100%;
-    height: 200%;
-    color: var(--counter-text-color);
-    text-shadow: 0 1px 2px #000;
-    text-align: center;
-    background-color: #333;
-    border-radius: 4px;
-    font-family: 'Roboto Mono', 'SF Mono', 'Courier New', monospace;
+  position: absolute;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 200%;
+  color: var(--counter-text-color);
+  text-shadow: 0 1px 2px #000;
+  text-align: center;
+  background-color: #333;
+  border-radius: 4px;
+  font-family: "Roboto Mono", "SF Mono", "Courier New", monospace;
 }
 
 .flip-digit-li a div.up .inn {
-    top: 0;
-    background: linear-gradient(to bottom, #444 0%, #333 100%);
+  top: 0;
+  background: linear-gradient(to bottom, #444 0%, #333 100%);
 }
 
 .flip-digit-li a div.down .inn {
-    bottom: 0;
-    background: linear-gradient(to bottom, #333 0%, #2a2a2a 100%);
+  bottom: 0;
+  background: linear-gradient(to bottom, #333 0%, #2a2a2a 100%);
 }
 
 /* Shadow overlay for 3D effect */
 .flip-digit-li a div .shadow {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
 }
 
 /* Animation states */
 .flip-digit-ul.play li.flip-clock-before {
-    z-index: 3;
+  z-index: 3;
 }
 
 .flip-digit-ul li.flip-clock-active {
-    z-index: 3;
+  z-index: 3;
 }
 
 .flip-digit-ul.play li.flip-clock-active {
-    animation: flipDigitZ 0.5s 0.5s linear both;
-    z-index: 5;
+  animation: flipDigitZ 0.5s 0.5s linear both;
+  z-index: 5;
 }
 
 @keyframes flipDigitZ {
-    0% {
-        z-index: 2;
-    }
+  0% {
+    z-index: 2;
+  }
 
-    20% {
-        z-index: 4;
-    }
+  20% {
+    z-index: 4;
+  }
 
-    100% {
-        z-index: 4;
-    }
+  100% {
+    z-index: 4;
+  }
 }
 
 /* Top half flips down (before state) */
 .flip-digit-ul.play li.flip-clock-before .up {
-    z-index: 2;
-    animation: flipTop 0.5s linear both;
+  z-index: 2;
+  animation: flipTop 0.5s linear both;
 }
 
 @keyframes flipTop {
-    0% {
-        transform: rotateX(0deg);
-    }
+  0% {
+    transform: rotateX(0deg);
+  }
 
-    100% {
-        transform: rotateX(-90deg);
-    }
+  100% {
+    transform: rotateX(-90deg);
+  }
 }
 
 /* Bottom half flips down (active state) */
 .flip-digit-ul.play li.flip-clock-active .down {
-    z-index: 2;
-    animation: flipBottom 0.5s 0.5s linear both;
+  z-index: 2;
+  animation: flipBottom 0.5s 0.5s linear both;
 }
 
 @keyframes flipBottom {
-    0% {
-        transform: rotateX(90deg);
-    }
+  0% {
+    transform: rotateX(90deg);
+  }
 
-    100% {
-        transform: rotateX(0deg);
-    }
+  100% {
+    transform: rotateX(0deg);
+  }
 }
 
 /* Shadow animations for depth effect */
 .flip-digit-ul.play li.flip-clock-before .up .shadow {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
-    animation: showShadow 0.5s linear both;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  animation: showShadow 0.5s linear both;
 }
 
 .flip-digit-ul.play li.flip-clock-active .up .shadow {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 100%);
-    animation: hideShadow 0.5s 0.3s linear both;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  animation: hideShadow 0.5s 0.3s linear both;
 }
 
 .flip-digit-ul.play li.flip-clock-before .down .shadow {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.1) 100%);
-    animation: showShadow 0.5s linear both;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  animation: showShadow 0.5s linear both;
 }
 
 .flip-digit-ul.play li.flip-clock-active .down .shadow {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.1) 100%);
-    animation: hideShadow 0.5s 0.2s linear both;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  animation: hideShadow 0.5s 0.2s linear both;
 }
 
 @keyframes showShadow {
-    0% {
-        opacity: 0;
-    }
+  0% {
+    opacity: 0;
+  }
 
-    100% {
-        opacity: 1;
-    }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes hideShadow {
-    0% {
-        opacity: 1;
-    }
+  0% {
+    opacity: 1;
+  }
 
-    100% {
-        opacity: 0;
-    }
+  100% {
+    opacity: 0;
+  }
 }
 
 .flip-label {
-    font-size: 0.55em;
-    color: var(--counter-text-color);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 5px;
+  font-size: 0.55em;
+  color: var(--counter-text-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 5px;
 }
 
 /* ============================================
@@ -696,14 +787,14 @@
    ============================================ */
 
 .animation-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
 }
 
 /* ============================================
@@ -711,52 +802,54 @@
    ============================================ */
 
 .particle {
-    position: absolute;
-    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Android Emoji', 'EmojiSymbols', sans-serif;
-    font-size: calc(0.9em * var(--particle-size, 1));
-    opacity: 0;
-    filter: opacity(0.6);
+  position: absolute;
+  font-family:
+    "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji",
+    "EmojiSymbols", sans-serif;
+  font-size: calc(0.9em * var(--particle-size, 1));
+  opacity: 0;
+  filter: opacity(0.6);
 }
 
 /* Celebration particles use snowfall animation */
 .celebration-particle {
-    top: -10%;
-    animation-name: celebrationFall;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
+  top: -10%;
+  animation-name: celebrationFall;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }
 
 /* Celebration fall animation (snow-style) */
 @keyframes celebrationFall {
-    0% {
-        transform: translateY(0) translateX(0) rotate(0deg);
-        opacity: 0;
-    }
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
 
-    10% {
-        opacity: 1;
-    }
+  10% {
+    opacity: 1;
+  }
 
-    25% {
-        transform: translateY(25vh) translateX(15px) rotate(90deg);
-    }
+  25% {
+    transform: translateY(25vh) translateX(15px) rotate(90deg);
+  }
 
-    50% {
-        transform: translateY(50vh) translateX(-10px) rotate(180deg);
-    }
+  50% {
+    transform: translateY(50vh) translateX(-10px) rotate(180deg);
+  }
 
-    75% {
-        transform: translateY(75vh) translateX(20px) rotate(270deg);
-    }
+  75% {
+    transform: translateY(75vh) translateX(20px) rotate(270deg);
+  }
 
-    90% {
-        opacity: 0.8;
-    }
+  90% {
+    opacity: 0.8;
+  }
 
-    100% {
-        transform: translateY(110vh) translateX(-5px) rotate(360deg);
-        opacity: 0;
-    }
+  100% {
+    transform: translateY(110vh) translateX(-5px) rotate(360deg);
+    opacity: 0;
+  }
 }
 
 /* ============================================
@@ -765,484 +858,521 @@
 
 /* Icon bounce */
 @keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
 
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-15px);
-    }
+  50% {
+    transform: translateY(-15px);
+  }
 }
 
 /* ============================================
    RESPONSIVE SCALING - Container Queries
    ============================================ */
 
-/* Scale 1.1x - Slightly wider columns (350px+) */
-@container countdown-module (min-width: 350px) {
-    .mmm-animated-countdowns.stacked-mode {
-        gap: 28px;
-    }
-
-    .event-icon {
-        font-size: 2.75em;
-    }
-
-    .event-name {
-        font-size: 1.76em;
-        max-width: 330px;
-    }
-
-    /* Digital */
-    .countdown-units.countdown-digital {
-        gap: 9px;
-    }
-
-    .time-unit {
-        padding: 9px 7px;
-        min-width: 75px;
-    }
-
-    .time-value {
-        font-size: 1.76em;
-    }
-
-    .time-label {
-        font-size: 0.55em;
-    }
-
-    /* Rings */
-    .countdown-rings {
-        gap: 9px;
-    }
-
-    .ring-container {
-        width: 75px;
-        height: 75px;
-    }
-
-    .ring-value {
-        font-size: 1.32em;
-    }
-
-    .ring-label {
-        font-size: 0.55em;
-    }
-
-    /* Hourglass */
-    .countdown-hourglass {
-        gap: 9px;
-    }
-
-    .hourglass-container {
-        width: 75px;
-    }
-
-    .hourglass-svg {
-        height: 61px;
-    }
-
-    .hourglass-value {
-        font-size: 1.32em;
-    }
-
-    .hourglass-label {
-        font-size: 0.55em;
-    }
-
-    /* Flip */
-    .countdown-flip {
-        gap: 9px;
-    }
-
-    .flip-digit-ul {
-        width: 35px;
-        height: 59px;
-        font-size: 37px;
-        line-height: 59px;
-    }
-
-    .flip-digit-li a div.up:after {
-        top: 29px;
-    }
-
-    .flip-label {
-        font-size: 0.6em;
-    }
+/* Base: Scale down for very narrow containers (under 250px) */
+@container countdown-module (max-width: 249px) {
+  .countdown-container {
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
 }
 
-/* Scale 1.25x - Medium columns (420px+) */
-@container countdown-module (min-width: 420px) {
-    .mmm-animated-countdowns.stacked-mode {
-        gap: 31px;
-    }
+/* Scale up - Center column and wider (280px+) */
+@container countdown-module (min-width: 280px) {
+  .mmm-animated-countdowns.stacked-mode {
+    gap: 27px;
+  }
 
-    .event-icon {
-        font-size: 3.1em;
-    }
+  .event-icon {
+    font-size: 2.7em;
+  }
 
-    .event-name {
-        font-size: 2em;
-        max-width: 375px;
-    }
+  .event-name {
+    font-size: 1.7em;
+    max-width: 280px;
+  }
 
-    /* Digital */
-    .countdown-units.countdown-digital {
-        gap: 10px;
-    }
+  /* Digital */
+  .countdown-units.countdown-digital {
+    gap: 7px;
+  }
 
-    .time-unit {
-        padding: 10px 8px;
-        min-width: 85px;
-    }
+  .time-unit {
+    padding: 8px 6px;
+  }
 
-    .time-value {
-        font-size: 2em;
-    }
+  .time-unit:first-child {
+    min-width: 58px;
+  }
 
-    .time-label {
-        font-size: 0.63em;
-    }
+  .time-unit:not(:first-child) {
+    width: 58px;
+  }
 
-    /* Rings */
-    .countdown-rings {
-        gap: 10px;
-    }
+  .time-value {
+    font-size: 1.7em;
+  }
 
-    .ring-container {
-        width: 85px;
-        height: 85px;
-    }
+  .time-label {
+    font-size: 0.55em;
+  }
 
-    .ring-value {
-        font-size: 1.5em;
-    }
+  /* Rings */
+  .countdown-rings {
+    gap: 7px;
+  }
 
-    .ring-label {
-        font-size: 0.63em;
-    }
+  .ring-container {
+    width: 68px;
+  }
 
-    /* Hourglass */
-    .countdown-hourglass {
-        gap: 10px;
-    }
+  .ring-value {
+    font-size: 1.3em;
+  }
 
-    .hourglass-container {
-        width: 85px;
-    }
+  .ring-label {
+    font-size: 0.55em;
+  }
 
-    .hourglass-svg {
-        height: 69px;
-    }
+  /* Hourglass */
+  .countdown-hourglass {
+    gap: 7px;
+  }
 
-    .hourglass-value {
-        font-size: 1.5em;
-    }
+  .hourglass-container {
+    width: 68px;
+  }
 
-    .hourglass-label {
-        font-size: 0.63em;
-    }
+  .hourglass-svg {
+    height: 55px;
+  }
 
-    /* Flip */
-    .countdown-flip {
-        gap: 10px;
-    }
+  .hourglass-value {
+    font-size: 1.3em;
+  }
 
-    .flip-digit-ul {
-        width: 40px;
-        height: 68px;
-        font-size: 43px;
-        line-height: 68px;
-    }
+  .hourglass-label {
+    font-size: 0.55em;
+  }
 
-    .flip-digit-li a div.up:after {
-        top: 33px;
-    }
+  /* Flip */
+  .countdown-flip {
+    gap: 7px;
+  }
 
-    .flip-label {
-        font-size: 0.69em;
-    }
+  .flip-digit-ul {
+    width: 28px;
+    height: 47px;
+    font-size: 30px;
+    line-height: 47px;
+  }
+
+  .flip-digit-li a div.up:after {
+    top: 23px;
+  }
+
+  .flip-label {
+    font-size: 0.55em;
+  }
 }
 
-/* Scale 1.45x - Wide columns (520px+) */
-@container countdown-module (min-width: 520px) {
-    .mmm-animated-countdowns.stacked-mode {
-        gap: 36px;
-    }
+/* Scale up - Left column and wider (320px+) */
+@container countdown-module (min-width: 320px) {
+  .mmm-animated-countdowns.stacked-mode {
+    gap: 28px;
+  }
 
-    .event-icon {
-        font-size: 3.6em;
-    }
+  .event-icon {
+    font-size: 2.8em;
+  }
 
-    .event-name {
-        font-size: 2.3em;
-        max-width: 435px;
-    }
+  .event-name {
+    font-size: 1.8em;
+    max-width: 300px;
+  }
 
-    /* Digital */
-    .countdown-units.countdown-digital {
-        gap: 12px;
-    }
+  /* Digital */
+  .countdown-units.countdown-digital {
+    gap: 7px;
+  }
 
-    .time-unit {
-        padding: 12px 9px;
-        min-width: 99px;
-    }
+  .time-unit {
+    padding: 9px 7px;
+  }
 
-    .time-value {
-        font-size: 2.3em;
-    }
+  .time-unit:first-child {
+    min-width: 62px;
+  }
 
-    .time-label {
-        font-size: 0.73em;
-    }
+  .time-unit:not(:first-child) {
+    width: 62px;
+  }
 
-    /* Rings */
-    .countdown-rings {
-        gap: 12px;
-    }
+  .time-value {
+    font-size: 1.8em;
+  }
 
-    .ring-container {
-        width: 99px;
-        height: 99px;
-    }
+  .time-label {
+    font-size: 0.58em;
+  }
 
-    .ring-value {
-        font-size: 1.74em;
-    }
+  /* Rings */
+  .countdown-rings {
+    gap: 7px;
+  }
 
-    .ring-label {
-        font-size: 0.73em;
-    }
+  .ring-container {
+    width: 74px;
+  }
 
-    /* Hourglass */
-    .countdown-hourglass {
-        gap: 12px;
-    }
+  .ring-value {
+    font-size: 1.4em;
+  }
 
-    .hourglass-container {
-        width: 99px;
-    }
+  .ring-label {
+    font-size: 0.58em;
+  }
 
-    .hourglass-svg {
-        height: 80px;
-    }
+  /* Hourglass */
+  .countdown-hourglass {
+    gap: 7px;
+  }
 
-    .hourglass-value {
-        font-size: 1.74em;
-    }
+  .hourglass-container {
+    width: 74px;
+  }
 
-    .hourglass-label {
-        font-size: 0.73em;
-    }
+  .hourglass-svg {
+    height: 60px;
+  }
 
-    /* Flip */
-    .countdown-flip {
-        gap: 12px;
-    }
+  .hourglass-value {
+    font-size: 1.4em;
+  }
 
-    .flip-digit-ul {
-        width: 46px;
-        height: 78px;
-        font-size: 49px;
-        line-height: 78px;
-    }
+  .hourglass-label {
+    font-size: 0.58em;
+  }
 
-    .flip-digit-li a div.up:after {
-        top: 38px;
-    }
+  /* Flip */
+  .countdown-flip {
+    gap: 7px;
+  }
 
-    .flip-label {
-        font-size: 0.8em;
-    }
+  .flip-digit-ul {
+    width: 30px;
+    height: 50px;
+    font-size: 32px;
+    line-height: 50px;
+  }
+
+  .flip-digit-li a div.up:after {
+    top: 24px;
+  }
+
+  .flip-label {
+    font-size: 0.6em;
+  }
 }
 
-/* Scale 1.7x - Very wide columns (650px+) */
-@container countdown-module (min-width: 650px) {
-    .mmm-animated-countdowns.stacked-mode {
-        gap: 43px;
-    }
+/* Scale up - Full-width and wider (400px+) */
+@container countdown-module (min-width: 400px) {
+  .mmm-animated-countdowns.stacked-mode {
+    gap: 32px;
+  }
 
-    .event-icon {
-        font-size: 4.25em;
-    }
+  .event-icon {
+    font-size: 3.2em;
+  }
 
-    .event-name {
-        font-size: 2.7em;
-        max-width: 510px;
-    }
+  .event-name {
+    font-size: 2em;
+    max-width: 380px;
+  }
 
-    /* Digital */
-    .countdown-units.countdown-digital {
-        gap: 14px;
-    }
+  /* Digital */
+  .countdown-units.countdown-digital {
+    gap: 8px;
+  }
 
-    .time-unit {
-        padding: 14px 10px;
-        min-width: 116px;
-    }
+  .time-unit {
+    padding: 10px 8px;
+  }
 
-    .time-value {
-        font-size: 2.7em;
-    }
+  .time-unit:first-child {
+    min-width: 72px;
+  }
 
-    .time-label {
-        font-size: 0.85em;
-    }
+  .time-unit:not(:first-child) {
+    width: 72px;
+  }
 
-    /* Rings */
-    .countdown-rings {
-        gap: 14px;
-    }
+  .time-value {
+    font-size: 2em;
+  }
 
-    .ring-container {
-        width: 116px;
-        height: 116px;
-    }
+  .time-label {
+    font-size: 0.65em;
+  }
 
-    .ring-value {
-        font-size: 2.04em;
-    }
+  /* Rings */
+  .countdown-rings {
+    gap: 8px;
+  }
 
-    .ring-label {
-        font-size: 0.85em;
-    }
+  .ring-container {
+    width: 90px;
+  }
 
-    /* Hourglass */
-    .countdown-hourglass {
-        gap: 14px;
-    }
+  .ring-value {
+    font-size: 1.6em;
+  }
 
-    .hourglass-container {
-        width: 116px;
-    }
+  .ring-label {
+    font-size: 0.65em;
+  }
 
-    .hourglass-svg {
-        height: 94px;
-    }
+  /* Hourglass */
+  .countdown-hourglass {
+    gap: 8px;
+  }
 
-    .hourglass-value {
-        font-size: 2.04em;
-    }
+  .hourglass-container {
+    width: 90px;
+  }
 
-    .hourglass-label {
-        font-size: 0.85em;
-    }
+  .hourglass-svg {
+    height: 73px;
+  }
 
-    /* Flip */
-    .countdown-flip {
-        gap: 14px;
-    }
+  .hourglass-value {
+    font-size: 1.6em;
+  }
 
-    .flip-digit-ul {
-        width: 54px;
-        height: 92px;
-        font-size: 58px;
-        line-height: 92px;
-    }
+  .hourglass-label {
+    font-size: 0.65em;
+  }
 
-    .flip-digit-li a div.up:after {
-        top: 45px;
-    }
+  /* Flip */
+  .countdown-flip {
+    gap: 8px;
+  }
 
-    .flip-label {
-        font-size: 0.94em;
-    }
+  .flip-digit-ul {
+    width: 38px;
+    height: 64px;
+    font-size: 40px;
+    line-height: 64px;
+  }
+
+  .flip-digit-li a div.up:after {
+    top: 31px;
+  }
+
+  .flip-label {
+    font-size: 0.7em;
+  }
 }
 
-/* Scale 2x - Extra wide / full-width (800px+) */
-@container countdown-module (min-width: 800px) {
-    .mmm-animated-countdowns.stacked-mode {
-        gap: 50px;
-    }
+/* Scale up - Wide containers (500px+) */
+@container countdown-module (min-width: 500px) {
+  .mmm-animated-countdowns.stacked-mode {
+    gap: 38px;
+  }
 
-    .event-icon {
-        font-size: 5em;
-    }
+  .event-icon {
+    font-size: 3.8em;
+  }
 
-    .event-name {
-        font-size: 3.2em;
-        max-width: 600px;
-    }
+  .event-name {
+    font-size: 2.4em;
+    max-width: 480px;
+  }
 
-    /* Digital */
-    .countdown-units.countdown-digital {
-        gap: 16px;
-    }
+  /* Digital */
+  .countdown-units.countdown-digital {
+    gap: 10px;
+  }
 
-    .time-unit {
-        padding: 16px 12px;
-        min-width: 136px;
-    }
+  .time-unit {
+    padding: 12px 10px;
+  }
 
-    .time-value {
-        font-size: 3.2em;
-    }
+  .time-unit:first-child {
+    min-width: 90px;
+  }
 
-    .time-label {
-        font-size: 1em;
-    }
+  .time-unit:not(:first-child) {
+    width: 90px;
+  }
 
-    /* Rings */
-    .countdown-rings {
-        gap: 16px;
-    }
+  .time-value {
+    font-size: 2.4em;
+  }
 
-    .ring-container {
-        width: 136px;
-        height: 136px;
-    }
+  .time-label {
+    font-size: 0.75em;
+  }
 
-    .ring-value {
-        font-size: 2.4em;
-    }
+  /* Rings */
+  .countdown-rings {
+    gap: 10px;
+  }
 
-    .ring-label {
-        font-size: 1em;
-    }
+  .ring-container {
+    width: 115px;
+  }
 
-    /* Hourglass */
-    .countdown-hourglass {
-        gap: 16px;
-    }
+  .ring-value {
+    font-size: 1.9em;
+  }
 
-    .hourglass-container {
-        width: 136px;
-    }
+  .ring-label {
+    font-size: 0.75em;
+  }
 
-    .hourglass-svg {
-        height: 110px;
-    }
+  /* Hourglass */
+  .countdown-hourglass {
+    gap: 10px;
+  }
 
-    .hourglass-value {
-        font-size: 2.4em;
-    }
+  .hourglass-container {
+    width: 115px;
+  }
 
-    .hourglass-label {
-        font-size: 1em;
-    }
+  .hourglass-svg {
+    height: 93px;
+  }
 
-    /* Flip */
-    .countdown-flip {
-        gap: 16px;
-    }
+  .hourglass-value {
+    font-size: 1.9em;
+  }
 
-    .flip-digit-ul {
-        width: 64px;
-        height: 108px;
-        font-size: 68px;
-        line-height: 108px;
-    }
+  .hourglass-label {
+    font-size: 0.75em;
+  }
 
-    .flip-digit-li a div.up:after {
-        top: 53px;
-    }
+  /* Flip */
+  .countdown-flip {
+    gap: 10px;
+  }
 
-    .flip-label {
-        font-size: 1.1em;
-    }
+  .flip-digit-ul {
+    width: 48px;
+    height: 81px;
+    font-size: 51px;
+    line-height: 81px;
+  }
+
+  .flip-digit-li a div.up:after {
+    top: 39px;
+  }
+
+  .flip-label {
+    font-size: 0.85em;
+  }
+}
+
+/* Scale up - Extra wide containers (620px+) */
+@container countdown-module (min-width: 620px) {
+  .mmm-animated-countdowns.stacked-mode {
+    gap: 45px;
+  }
+
+  .event-icon {
+    font-size: 4.5em;
+  }
+
+  .event-name {
+    font-size: 2.8em;
+    max-width: 580px;
+  }
+
+  /* Digital */
+  .countdown-units.countdown-digital {
+    gap: 12px;
+  }
+
+  .time-unit {
+    padding: 14px 12px;
+  }
+
+  .time-unit:first-child {
+    min-width: 110px;
+  }
+
+  .time-unit:not(:first-child) {
+    width: 110px;
+  }
+
+  .time-value {
+    font-size: 2.8em;
+  }
+
+  .time-label {
+    font-size: 0.9em;
+  }
+
+  /* Rings */
+  .countdown-rings {
+    gap: 12px;
+  }
+
+  .ring-container {
+    width: 140px;
+  }
+
+  .ring-value {
+    font-size: 2.2em;
+  }
+
+  .ring-label {
+    font-size: 0.9em;
+  }
+
+  /* Hourglass */
+  .countdown-hourglass {
+    gap: 12px;
+  }
+
+  .hourglass-container {
+    width: 140px;
+  }
+
+  .hourglass-svg {
+    height: 113px;
+  }
+
+  .hourglass-value {
+    font-size: 2.2em;
+  }
+
+  .hourglass-label {
+    font-size: 0.9em;
+  }
+
+  /* Flip */
+  .countdown-flip {
+    gap: 12px;
+  }
+
+  .flip-digit-ul {
+    width: 58px;
+    height: 98px;
+    font-size: 62px;
+    line-height: 98px;
+  }
+
+  .flip-digit-li a div.up:after {
+    top: 48px;
+  }
+
+  .flip-label {
+    font-size: 1em;
+  }
 }
 
 /* ============================================
@@ -1251,34 +1381,37 @@
 
 /* Digital counter arrived glow - glow the digit boxes */
 .countdown-container.arrived .time-unit {
-    animation: arrivedBoxGlow 1.5s ease-in-out infinite;
+  animation: arrivedBoxGlow 1.5s ease-in-out infinite;
 }
 
 @keyframes arrivedBoxGlow {
-    0%, 100% {
-        box-shadow: 0 0 10px var(--accent-color, #ffd700),
-                    0 0 20px var(--accent-color, #ffd700);
-    }
-    50% {
-        box-shadow: 0 0 20px var(--accent-color, #ffd700),
-                    0 0 40px var(--accent-color, #ffd700),
-                    0 0 60px var(--accent-color, #ffd700);
-    }
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px var(--accent-color, #ffd700),
+      0 0 20px var(--accent-color, #ffd700);
+  }
+  50% {
+    box-shadow:
+      0 0 20px var(--accent-color, #ffd700),
+      0 0 40px var(--accent-color, #ffd700),
+      0 0 60px var(--accent-color, #ffd700);
+  }
 }
 
 /* Rings counter arrived glow - glow the ring containers */
 .countdown-container.arrived .ring-container {
-    animation: arrivedBoxGlow 1.5s ease-in-out infinite;
-    border-radius: 50%;
+  animation: arrivedBoxGlow 1.5s ease-in-out infinite;
+  border-radius: 50%;
 }
 
 /* Flip counter arrived glow - glow the digit boxes */
 .countdown-container.arrived .flip-digit-ul {
-    animation: arrivedBoxGlow 1.5s ease-in-out infinite;
+  animation: arrivedBoxGlow 1.5s ease-in-out infinite;
 }
 
 /* Hourglass counter arrived glow - glow the hourglass containers */
 .countdown-container.arrived .hourglass-container {
-    animation: arrivedBoxGlow 1.5s ease-in-out infinite;
-    border-radius: 8px;
+  animation: arrivedBoxGlow 1.5s ease-in-out infinite;
+  border-radius: 8px;
 }
