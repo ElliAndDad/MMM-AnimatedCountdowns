@@ -37,6 +37,17 @@ git clone https://github.com/ElliAndDad/MMM-AnimatedCountdowns.git
 sudo apt install fonts-noto-color-emoji
 ```
 
+## Update
+
+To update the module to the latest version:
+
+```bash
+cd ~/MagicMirror/modules/MMM-AnimatedCountdowns
+git pull
+```
+
+Then restart MagicMirror to apply changes.
+
 ## Configuration
 
 Add the module to your `config/config.js` file. Copy the config below and customize it to your needs:
@@ -87,7 +98,7 @@ Add the module to your `config/config.js` file. Copy the config below and custom
 | `colorMode` | Boolean | `true` | `true` = full color, `false` = grayscale (inverted for MagicMirror display) |
 | `showPassedEventsForHours` | Integer | `24` | Hours to continue showing event after countdown reaches zero |
 | `updateInterval` | Integer | `1000` | Countdown update frequency in milliseconds |
-| `defaultCelebrationEmojis` | Array | `["🎉", "🌟", "🍾"]` | Default celebration emojis (when not specified per-event) |
+| `defaultCelebrationEmojis` | Array | `["🎉", "🌟", "🾓"]` | Default celebration emojis (when not specified per-event) |
 | `celebrationParticleCount` | Integer | `30` | Number of particles in celebration animation |
 | `events` | Array | *required* | Array of event objects (see below) |
 

@@ -5,8 +5,8 @@
   "description": "A MagicMirror² module for displaying animated countdown timers with celebration effects",
   "main": "MMM-AnimatedCountdowns.js",
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
   },
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
   },
   "keywords": [
     "MagicMirror",
-    "MagicMirror2",
+    "MagicMirror²",
     "countdown",
     "timer",
     "animation"
