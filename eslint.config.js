@@ -1,6 +1,7 @@
 import js from "@eslint/js";
+import { defineConfig } from "eslint/config";
 
-export default [
+export default defineConfig([
   js.configs.recommended,
   {
     ignores: ["eslint.config.js"]
@@ -15,6 +16,8 @@ export default [
         window: "readonly",
         setInterval: "readonly",
         setTimeout: "readonly",
+        clearTimeout: "readonly",
+        clearInterval: "readonly",
         // Node globals
         module: "readonly",
         require: "readonly",
@@ -41,4 +44,4 @@ export default [
       "eol-last": ["error", "always"]
     }
   }
-];
+]);

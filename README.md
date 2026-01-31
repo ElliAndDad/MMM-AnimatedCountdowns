@@ -25,6 +25,7 @@ A MagicMirror² module for displaying animated countdown timers with celebration
   - [Disabling Arrival Effects](#disabling-arrival-effects)
   - [Hiding the Icon](#hiding-the-icon)
 - [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
 - [License](#license)
 
 ## Features
@@ -66,7 +67,6 @@ sudo apt install fonts-noto-color-emoji
 ## Update
 
 To update the module to the latest version:
-
 ```bash
 cd ~/MagicMirror/modules/MMM-AnimatedCountdowns
 git pull
@@ -77,7 +77,6 @@ Then restart MagicMirror to apply changes.
 ## Configuration
 
 Add the module to your `config/config.js` file. Copy the config below and customize it to your needs:
-
 ```javascript
 {
     module: "MMM-AnimatedCountdowns",
@@ -183,7 +182,6 @@ Add the module to your `config/config.js` file. Copy the config below and custom
 Create countdowns that automatically reset after each occurrence:
 
 **Weekly countdown** (e.g., countdown to the weekend):
-
 ```javascript
 {
     name: "Weekend!",
@@ -196,7 +194,6 @@ Create countdowns that automatically reset after each occurrence:
 ```
 
 **Monthly countdown** (e.g., countdown to payday):
-
 ```javascript
 {
     name: "Payday!",
@@ -209,7 +206,6 @@ Create countdowns that automatically reset after each occurrence:
 ```
 
 **Yearly countdown** (e.g., recurring birthday):
-
 ```javascript
 {
     name: "Mom's Birthday!",
@@ -234,7 +230,6 @@ The module automatically scales to fit the width of your MagicMirror region. Pla
 ### Custom Celebration Emojis
 
 You can customize the falling emojis for each event:
-
 ```javascript
 {
     name: "Halloween Party",
@@ -251,7 +246,6 @@ You can customize the falling emojis for each event:
 The celebration particles and arrival glow can be controlled separately:
 
 **Disable celebration particles only** (glow still shows briefly):
-
 ```javascript
 {
     name: "Quiet Event",
@@ -261,7 +255,6 @@ The celebration particles and arrival glow can be controlled separately:
 ```
 
 **Disable both celebration and glow** by hiding the event immediately when it arrives:
-
 ```javascript
 {
     module: "MMM-AnimatedCountdowns",
@@ -276,7 +269,6 @@ The celebration particles and arrival glow can be controlled separately:
 ### Hiding the Icon
 
 If you prefer a cleaner look without the bouncing emoji icon:
-
 ```javascript
 {
     name: "Minimal Event",
@@ -321,6 +313,20 @@ Then restart MagicMirror.
 ### Module displays incorrectly on older systems
 - This module uses CSS Container Queries which require a modern browser. 
 - Make sure your MagicMirror is running on Electron 105+ or a current Chromium-based browser.
+
+## Contributing
+
+1. Fork and clone the repository
+2. Install dev dependencies:
+```bash
+   npm install
+```
+3. Make your changes
+4. Run the linter before committing:
+```bash
+   npm run lint:fix
+```
+5. Submit a pull request
 
 ## License
 
