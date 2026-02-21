@@ -1066,11 +1066,14 @@ Module.register("MMM-AnimatedCountdowns", {
             wrapper.classList.add("grayscale-mode");
         }
 
-        // No events to display
+        // No events to display - hide module entirely
         if (this.events.length === 0) {
-            wrapper.innerHTML = "<div class='no-events'>No upcoming events</div>";
+            this.hide(0);
             return wrapper;
         }
+
+        // Ensure module is visible when there are events
+        this.show(0);
 
         // Show all events stacked
         for (let i = 0; i < this.events.length; i++) {
